@@ -23,6 +23,8 @@ fullname(function (err, name) {
 });
 ```
 
+In the rare case a name can't be found you could fall back to [`username`](https://github.com/sindresorhus/username).
+
 
 ## CLI
 
