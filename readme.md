@@ -45,6 +45,11 @@ Usage
 ```
 
 
+## Related
+
+- [username](https://github.com/sindresorhus/username) - Get the username of the current user
+
+
 ## License
 
 [MIT](http://opensource.org/licenses/MIT) © [Sindre Sorhus](http://sindresorhus.com)
