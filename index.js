@@ -10,10 +10,6 @@ module.exports = function (cb) {
 
 	first = false;
 
-	try {
-		fullname = require('fullname-native');
-	} catch (err) {}
-
 	if (fullname) {
 		return cb(null, fullname);
 	}

@@ -40,9 +40,6 @@
     "pwuid",
     "uid"
   ],
-  "optionalDependencies": {
-    "fullname-native": "^0.1.0"
-  },
   "devDependencies": {
     "mocha": "*"
   }
