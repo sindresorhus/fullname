@@ -42,17 +42,18 @@ module.exports = function (cb) {
 	}
 
 	if (process.platform === 'win32') {
-		exec('wmic useraccount where name="%username%" get fullname', function (err, stdout) {
-			fullname = stdout.trim().replace(/^.*\r/, '');
+		// try git first since fullname is usually not set by default in the system on Windows 7+
+		exec('git config --global user.name', function (err, stdout) {
+			fullname = stdout.trim();
 
 			if (err || !fullname) {
-				exec('git config --global user.name', function (err, stdout) {
+				exec('wmic useraccount where name="%username%" get fullname', function (err, stdout) {
 					if (err) {
 						cb();
 						return;
 					}
 
-					fullname = stdout.trim();
+					fullname = stdout.replace('FullName', '').trim();
 
 					cb(null, fullname);
 				});
