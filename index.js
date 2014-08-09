@@ -15,15 +15,27 @@ module.exports = function (cb) {
 	}
 
 	if (process.platform === 'darwin') {
-		exec('osascript -e "long user name of (system info)"', function (err, stdout) {
-			if (err) {
-				return cb();
-			}
+		exec('id -P', function (err, stdout) {
+			fullname = stdout.trim().split(':')[7];
 
-			fullname = stdout.trim();
+			// `id -P` should never fail as far as I know, but just in case:
+			if (err || !fullname) {
+				exec('osascript -e "long user name of (system info)"', function (err, stdout) {
+					if (err) {
+						cb();
+						return;
+					}
+
+					fullname = stdout.trim();
+
+					cb(null, fullname);
+				});
+				return;
+			}
 
 			cb(null, fullname);
 		});
+
 		return;
 	}
 
