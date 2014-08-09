@@ -43,14 +43,22 @@ module.exports = function (cb) {
 
 	if (process.platform === 'win32') {
 		exec('wmic useraccount where name="%username%" get fullname', function (err, stdout) {
-			if (err) {
-				cb();
-				return;
-			}
-
 			fullname = stdout.trim().replace(/^.*\r/, '');
 
-			cb(null, fullname);
+			if (err || !fullname) {
+				exec('git config --global user.name', function (err, stdout) {
+					if (err) {
+						cb();
+						return;
+					}
+
+					fullname = stdout.trim();
+
+					cb(null, fullname);
+				});
+			} else {
+				cb(null, fullname);
+			}
 		});
 
 		return;
