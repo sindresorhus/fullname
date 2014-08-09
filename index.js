@@ -5,13 +5,15 @@ var first = true;
 
 module.exports = function (cb) {
 	if (!first) {
-		return cb(null, fullname);
+		cb(null, fullname);
+		return;
 	}
 
 	first = false;
 
 	if (fullname) {
-		return cb(null, fullname);
+		cb(null, fullname);
+		return;
 	}
 
 	if (process.platform === 'darwin') {
@@ -31,9 +33,9 @@ module.exports = function (cb) {
 					cb(null, fullname);
 				});
 				return;
+			} else {
+				cb(null, fullname);
 			}
-
-			cb(null, fullname);
 		});
 
 		return;
@@ -42,13 +44,15 @@ module.exports = function (cb) {
 	if (process.platform === 'win32') {
 		exec('wmic useraccount where name="%username%" get fullname', function (err, stdout) {
 			if (err) {
-				return cb();
+				cb();
+				return;
 			}
 
 			fullname = stdout.trim().replace(/^.*\r/, '');
 
 			cb(null, fullname);
 		});
+
 		return;
 	}
 
@@ -58,16 +62,16 @@ module.exports = function (cb) {
 		if (err || !fullname) {
 			exec('git config --global user.name', function (err, stdout) {
 				if (err) {
-					return cb();
+					cb();
+					return;
 				}
 
 				fullname = stdout.trim();
 
 				cb(null, fullname);
 			});
-			return;
+		} else {
+			cb(null, fullname);
 		}
-
-		cb(null, fullname);
 	});
 };
