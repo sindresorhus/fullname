@@ -1,6 +1,6 @@
 {
   "name": "fullname",
-  "version": "0.2.0",
+  "version": "1.0.0",
   "description": "Get the fullname of the current user",
   "license": "MIT",
   "repository": "sindresorhus/fullname",
