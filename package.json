@@ -4,13 +4,13 @@
   "description": "Get the fullname of the current user",
   "license": "MIT",
   "repository": "sindresorhus/fullname",
-  "bin": {
-    "fullname": "cli.js"
-  },
   "author": {
     "name": "Sindre Sorhus",
     "email": "sindresorhus@gmail.com",
     "url": "http://sindresorhus.com"
+  },
+  "bin": {
+    "fullname": "cli.js"
   },
   "engines": {
     "node": ">=0.10.0"

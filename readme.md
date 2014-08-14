@@ -5,7 +5,7 @@
 
 ## Install
 
-```bash
+```sh
 $ npm install --save fullname
 ```
 
@@ -28,28 +28,24 @@ In the rare case a name can't be found you could fall back to [`username`](https
 
 ## CLI
 
-You can also use it as a CLI app by installing it globally:
-
-```bash
+```sh
 $ npm install --global fullname
 ```
 
-#### Usage
-
-```bash
+```sh
 $ fullname --help
 
-Usage
-  $ fullname
-  Sindre Sorhus
+  Example
+    fullname
+    Sindre Sorhus
 ```
 
 
 ## Related
 
-- [username](https://github.com/sindresorhus/username) - Get the username of the current user
+See [username](https://github.com/sindresorhus/username) to get the username of the current user.
 
 
 ## License
 
-[MIT](http://opensource.org/licenses/MIT) © [Sindre Sorhus](http://sindresorhus.com)
+MIT © [Sindre Sorhus](http://sindresorhus.com)
