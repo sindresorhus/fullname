@@ -19,11 +19,13 @@ module.exports = function (cb) {
 
 	npmconf.load(function (err, conf) {
 		fullname = conf.get('init.author.name');
+
 		if (err || !fullname) {
 			fallback(cb);
-		} else {
-			cb(null, fullname);
+			return;
 		}
+
+		cb(null, fullname);
 	});
 };
 
@@ -45,9 +47,9 @@ function fallback (cb) {
 					cb(null, fullname);
 				});
 				return;
-			} else {
-				cb(null, fullname);
 			}
+
+			cb(null, fullname);
 		});
 
 		return;
@@ -69,9 +71,10 @@ function fallback (cb) {
 
 					cb(null, fullname);
 				});
-			} else {
-				cb(null, fullname);
+				return;
 			}
+
+			cb(null, fullname);
 		});
 
 		return;
@@ -91,8 +94,9 @@ function fallback (cb) {
 
 				cb(null, fullname);
 			});
-		} else {
-			cb(null, fullname);
+			return;
 		}
+
+		cb(null, fullname);
 	});
 }
