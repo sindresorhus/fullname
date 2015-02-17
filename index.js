@@ -1,5 +1,6 @@
 'use strict';
 var exec = require('child_process').exec;
+var npmconf = require('npmconf');
 var fullname;
 var first = true;
 
@@ -16,6 +17,17 @@ module.exports = function (cb) {
 		return;
 	}
 
+	npmconf.load(function (err, conf) {
+		fullname = conf.get('init.author.name');
+		if (err || !fullname) {
+			fallback(cb);
+		} else {
+			cb(null, fullname);
+		}
+	});
+};
+
+function fallback (cb) {
 	if (process.platform === 'darwin') {
 		exec('id -P', function (err, stdout) {
 			fullname = stdout.trim().split(':')[7];
@@ -83,4 +95,4 @@ module.exports = function (cb) {
 			cb(null, fullname);
 		}
 	});
-};
+}

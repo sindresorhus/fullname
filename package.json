@@ -42,5 +42,8 @@
   ],
   "devDependencies": {
     "mocha": "*"
+  },
+  "dependencies": {
+    "npmconf": "^2.1.1"
   }
 }
