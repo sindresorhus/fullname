@@ -36,7 +36,7 @@ $ npm install --global fullname
 $ fullname --help
 
   Example
-    fullname
+    $ fullname
     Sindre Sorhus
 ```
 
