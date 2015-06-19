@@ -8,7 +8,7 @@ meow({
 		'Example',
 		'  $ fullname',
 		'  Sindre Sorhus'
-	].join('\n')
+	]
 });
 
 fullname(function (err, name) {
