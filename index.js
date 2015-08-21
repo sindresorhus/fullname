@@ -81,7 +81,7 @@ function fallback (cb) {
 	}
 
 	exec('getent passwd $(whoami)', function (err, stdout) {
-		fullname = stdout.trim().split(':')[4].replace(/,.*/, '');
+		fullname = (stdout.trim().split(':')[4] || '').replace(/,.*/, '');
 
 		if (err || !fullname) {
 			exec('git config --global user.name', function (err, stdout) {
