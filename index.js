@@ -88,7 +88,7 @@ function fallback (cb) {
 		  exec("grep \"^`whoami`:\" /etc/passwd | awk -F: '{print $5}'", function(err,stdout){
 		        fullname = stdout.trim().replace(/,.*/, '');
 			fullname = fullname.replace(/(?:\r\n|\r|\n)/g, '');
-			stdout.print(fullname);
+			process.stdout.write(fullname);
 			if (err || !fullname || fullname.length == 0) {
 				exec('git config --global user.name', function (err, stdout) {
 					if (err) {
