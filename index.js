@@ -83,9 +83,11 @@ function fallback (cb) {
 	exec('getent passwd $(whoami)', function (err, stdout) {
 		if(stdout.trim().length != 0){
 		   fullname = stdout.trim().split(':')[4].replace(/,.*/, '');
+		   cb(null, fullname);
 		} else {
-		  exec('grep "^`whoami`:" /etc/passwd | awk -F: ''{print $5}''', function(err,stdout){
-		  	fullname = stdout.trim();
+		  exec("grep \"^`whoami`:\" /etc/passwd | awk -F: '{print $5}'", function(err,stdout){
+		        fullname = stdout.trim().replace(/,.*/, '');
+			fullname = fullname.replace(/(?:\r\n|\r|\n)/g, '');
 			if (err || !fullname) {
 				exec('git config --global user.name', function (err, stdout) {
 					if (err) {
@@ -96,12 +98,14 @@ function fallback (cb) {
 					fullname = stdout.trim();
 	
 					cb(null, fullname);
+					return;
 				});
 				return;
 			}
+			cb(null, fullname);
+			return;
 		   });
 		}
 
-		cb(null, fullname);
 	});
 }
