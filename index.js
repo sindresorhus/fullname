@@ -73,7 +73,7 @@ function fallback() {
 						return fullname;
 					});
 			});
-		}
+	}
 
 	return pify(exec)('getent passwd $(whoami)')
 		.then(function (stdout) {
