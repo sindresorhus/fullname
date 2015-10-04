@@ -1,10 +1,12 @@
 'use strict';
-var exec = require('child_process').exec;
+var childProcess = require('child_process');
 var npmconf = require('npmconf');
 var pify = require('pify');
 var Promise = require('pinkie-promise');
 var fullname;
 var first = true;
+
+var exec = pify(childProcess.exec, Promise);
 
 module.exports = function () {
 	if (!first) {
@@ -17,7 +19,7 @@ module.exports = function () {
 		return Promise.resolve(fullname);
 	}
 
-	return pify(npmconf.load)().then(function (conf) {
+	return pify(npmconf.load, Promise)().then(function (conf) {
 		fullname = conf.get('init.author.name');
 
 		if (!fullname) {
@@ -25,14 +27,12 @@ module.exports = function () {
 		}
 
 		return fullname;
-	}).catch(function () {
-		return fallback();
-	});
+	}).catch(fallback);
 };
 
 function fallback() {
 	if (process.platform === 'darwin') {
-		return pify(exec)('id -P')
+		return exec('id -P')
 			.then(function (stdout) {
 				fullname = stdout.trim().split(':')[7];
 
@@ -44,7 +44,7 @@ function fallback() {
 			})
 			.catch(function () {
 				// `id -P` should never fail as far as I know, but just in case:
-				return pify(exec)('osascript -e "long user name of (system info)"')
+				return exec('osascript -e "long user name of (system info)"')
 					.then(function (stdout) {
 						fullname = stdout.trim();
 
@@ -55,7 +55,7 @@ function fallback() {
 
 	if (process.platform === 'win32') {
 		// try git first since fullname is usually not set by default in the system on Windows 7+
-		return pify(exec)('git config --global user.name')
+		return exec('git config --global user.name')
 			.then(function (stdout) {
 				fullname = stdout.trim();
 
@@ -66,7 +66,7 @@ function fallback() {
 				return fullname;
 			})
 			.catch(function () {
-				return pify(exec)('wmic useraccount where name="%username%" get fullname')
+				return exec('wmic useraccount where name="%username%" get fullname')
 					.then(function (stdout) {
 						fullname = stdout.replace('FullName', '').trim();
 
@@ -75,7 +75,7 @@ function fallback() {
 			});
 	}
 
-	return pify(exec)('getent passwd $(whoami)')
+	return exec('getent passwd $(whoami)')
 		.then(function (stdout) {
 			fullname = (stdout.trim().split(':')[4] || '').replace(/,.*/, '');
 
@@ -86,7 +86,7 @@ function fallback() {
 			return fullname;
 		})
 		.catch(function () {
-			return pify(exec)('git config --global user.name')
+			return exec('git config --global user.name')
 				.then(function (stdout) {
 					fullname = stdout.trim();
 

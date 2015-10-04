@@ -6,5 +6,4 @@ test('should get the fullname of the current user', async t => {
 
 	t.true(typeof fullname === 'string');
 	t.true(fullname.length > 1);
-	t.end();
 });

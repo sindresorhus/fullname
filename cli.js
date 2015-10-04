@@ -11,10 +11,4 @@ meow({
 	]
 });
 
-fullname()
-	.then(function (name) {
-		console.log(name);
-	}).catch(function (err) {
-		console.error(err.message);
-		process.exit(1);
-	});
+fullname().then(console.log);
