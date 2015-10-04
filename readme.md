@@ -17,7 +17,7 @@ Tested on OS X, Linux and Windows.
 ```js
 var fullname = require('fullname');
 
-fullname(function (err, name) {
+fullname().then(function (name) {
 	console.log(name);
 	//=> Sindre Sorhus
 });

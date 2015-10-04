@@ -1,102 +1,96 @@
 'use strict';
 var exec = require('child_process').exec;
 var npmconf = require('npmconf');
+var pify = require('pify');
+var Promise = require('pinkie-promise');
 var fullname;
 var first = true;
 
-module.exports = function (cb) {
+module.exports = function () {
 	if (!first) {
-		cb(null, fullname);
-		return;
+		return Promise.resolve(fullname);
 	}
 
 	first = false;
 
 	if (fullname) {
-		cb(null, fullname);
-		return;
+		return Promise.resolve(fullname);
 	}
 
-	npmconf.load(function (err, conf) {
+	return pify(npmconf.load)().then(function (conf) {
 		fullname = conf.get('init.author.name');
 
-		if (err || !fullname) {
-			fallback(cb);
-			return;
+		if (!fullname) {
+			return fallback();
 		}
 
-		cb(null, fullname);
+		return fullname;
+	}).catch(function () {
+		return fallback();
 	});
 };
 
-function fallback (cb) {
+function fallback() {
 	if (process.platform === 'darwin') {
-		exec('id -P', function (err, stdout) {
-			fullname = stdout.trim().split(':')[7];
+		return pify(exec)('id -P')
+			.then(function (stdout) {
+				fullname = stdout.trim().split(':')[7];
 
-			// `id -P` should never fail as far as I know, but just in case:
-			if (err || !fullname) {
-				exec('osascript -e "long user name of (system info)"', function (err, stdout) {
-					if (err) {
-						cb();
-						return;
-					}
+				if (!fullname) {
+					throw new Error('Name could not be found.');
+				}
 
-					fullname = stdout.trim();
+				return fullname;
+			})
+			.catch(function () {
+				// `id -P` should never fail as far as I know, but just in case:
+				return pify(exec)('osascript -e "long user name of (system info)"')
+					.then(function (stdout) {
+						fullname = stdout.trim();
 
-					cb(null, fullname);
-				});
-				return;
-			}
-
-			cb(null, fullname);
-		});
-
-		return;
+						return fullname;
+					});
+			});
 	}
 
 	if (process.platform === 'win32') {
 		// try git first since fullname is usually not set by default in the system on Windows 7+
-		exec('git config --global user.name', function (err, stdout) {
-			fullname = stdout.trim();
-
-			if (err || !fullname) {
-				exec('wmic useraccount where name="%username%" get fullname', function (err, stdout) {
-					if (err) {
-						cb();
-						return;
-					}
-
-					fullname = stdout.replace('FullName', '').trim();
-
-					cb(null, fullname);
-				});
-				return;
-			}
-
-			cb(null, fullname);
-		});
-
-		return;
-	}
-
-	exec('getent passwd $(whoami)', function (err, stdout) {
-		fullname = (stdout.trim().split(':')[4] || '').replace(/,.*/, '');
-
-		if (err || !fullname) {
-			exec('git config --global user.name', function (err, stdout) {
-				if (err) {
-					cb();
-					return;
-				}
-
+		return pify(exec)('git config --global user.name')
+			.then(function (stdout) {
 				fullname = stdout.trim();
 
-				cb(null, fullname);
+				if (!fullname) {
+					throw new Error('Name could not be found.');
+				}
+
+				return fullname;
+			})
+			.catch(function () {
+				return pify(exec)('wmic useraccount where name="%username%" get fullname')
+					.then(function (stdout) {
+						fullname = stdout.replace('FullName', '').trim();
+
+						return fullname;
+					});
 			});
-			return;
 		}
 
-		cb(null, fullname);
-	});
+	return pify(exec)('getent passwd $(whoami)')
+		.then(function (stdout) {
+			fullname = (stdout.trim().split(':')[4] || '').replace(/,.*/, '');
+
+			if (!fullname) {
+				throw new Error('Name could not be found.');
+			}
+
+			return fullname;
+		})
+		.catch(function () {
+			return pify(exec)('git config --global user.name')
+				.then(function (stdout) {
+					fullname = stdout.trim();
+
+					return fullname;
+				});
+		});
 }

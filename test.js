@@ -1,12 +1,10 @@
-'use strict';
-var assert = require('assert');
-var fullname = require('./');
+import test from 'ava';
+import fn from './';
 
-it('should get the fullname of the current user', function (cb) {
-	fullname(function (err, name) {
-		console.log('Fullname: %s', name);
-		assert(typeof name === 'string');
-		assert(name.length > 1);
-		cb();
-	});
+test('should get the fullname of the current user', async t => {
+	const fullname = await fn();
+
+	t.true(typeof fullname === 'string');
+	t.true(fullname.length > 1);
+	t.end();
 });
