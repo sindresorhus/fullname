@@ -37,7 +37,7 @@ function fallback() {
 				fullname = stdout.trim().split(':')[7];
 
 				if (!fullname) {
-					throw new Error('Name could not be found.');
+					throw new Error();
 				}
 
 				return fullname;
@@ -60,7 +60,7 @@ function fallback() {
 				fullname = stdout.trim();
 
 				if (!fullname) {
-					throw new Error('Name could not be found.');
+					throw new Error();
 				}
 
 				return fullname;
@@ -80,7 +80,7 @@ function fallback() {
 			fullname = (stdout.trim().split(':')[4] || '').replace(/,.*/, '');
 
 			if (!fullname) {
-				throw new Error('Name could not be found.');
+				throw new Error();
 			}
 
 			return fullname;
