@@ -9,7 +9,7 @@
 $ npm install --save fullname
 ```
 
-Tested on OS X, Linux and Windows.
+Tested on OS X, Linux, and Windows.
 
 
 ## Usage
@@ -23,27 +23,14 @@ fullname().then(name => {
 });
 ```
 
-In the rare case a name can't be found you could fall back to [`username`](https://github.com/sindresorhus/username).
-
-
-## CLI
-
-```
-$ npm install --global fullname
-```
-
-```
-$ fullname --help
-
-  Example
-    $ fullname
-    Sindre Sorhus
-```
+In the rare case a name can't be found, you could fall back to [`username`](https://github.com/sindresorhus/username).
 
 
 ## Related
 
-See [username](https://github.com/sindresorhus/username) to get the username of the current user.
+- [fullname-cli](https://github.com/sindresorhus/fullname-cli) - CLI for this module
+- [fullname-native](https://github.com/sindresorhus/fullname-native) - Native version of this module
+- [username](https://github.com/sindresorhus/username) - Get the username of the current user
 
 
 ## License

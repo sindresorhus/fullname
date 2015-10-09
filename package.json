@@ -9,7 +9,6 @@
     "email": "sindresorhus@gmail.com",
     "url": "sindresorhus.com"
   },
-  "bin": "cli.js",
   "engines": {
     "node": ">=0.10.0"
   },
@@ -17,14 +16,9 @@
     "test": "xo && ava"
   },
   "files": [
-    "index.js",
-    "cli.js"
+    "index.js"
   ],
   "keywords": [
-    "cli-app",
-    "cli",
-    "bin",
-    "app",
     "name",
     "fullname",
     "realname",
@@ -40,7 +34,6 @@
     "uid"
   ],
   "dependencies": {
-    "meow": "^3.4.1",
     "npmconf": "^2.1.1",
     "pify": "^2.2.0",
     "pinkie-promise": "^1.0.0"

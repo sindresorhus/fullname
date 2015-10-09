@@ -5,7 +5,6 @@ var pify = require('pify');
 var Promise = require('pinkie-promise');
 var fullname;
 var first = true;
-
 var exec = pify(childProcess.exec, Promise);
 
 module.exports = function () {
