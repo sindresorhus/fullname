@@ -15,11 +15,11 @@ Tested on OS X, Linux and Windows.
 ## Usage
 
 ```js
-var fullname = require('fullname');
+const fullname = require('fullname');
 
-fullname(function (err, name) {
+fullname().then(name => {
 	console.log(name);
-	//=> Sindre Sorhus
+	//=> 'Sindre Sorhus'
 });
 ```
 

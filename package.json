@@ -14,7 +14,7 @@
     "node": ">=0.10.0"
   },
   "scripts": {
-    "test": "mocha"
+    "test": "xo && ava"
   },
   "files": [
     "index.js",
@@ -40,10 +40,18 @@
     "uid"
   ],
   "dependencies": {
-    "meow": "^3.3.0",
-    "npmconf": "^2.1.1"
+    "meow": "^3.4.1",
+    "npmconf": "^2.1.1",
+    "pify": "^2.2.0",
+    "pinkie-promise": "^1.0.0"
   },
   "devDependencies": {
-    "mocha": "*"
+    "ava": "*",
+    "xo": "*"
+  },
+  "xo": {
+    "ignores": [
+      "test.js"
+    ]
   }
 }
