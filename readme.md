@@ -5,7 +5,7 @@
 
 ## Install
 
-```sh
+```
 $ npm install --save fullname
 ```
 
@@ -28,11 +28,11 @@ In the rare case a name can't be found you could fall back to [`username`](https
 
 ## CLI
 
-```sh
+```
 $ npm install --global fullname
 ```
 
-```sh
+```
 $ fullname --help
 
   Example
