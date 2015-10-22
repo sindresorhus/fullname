@@ -26,7 +26,7 @@ module.exports = function () {
 		}
 
 		return fullname;
-	}).catch(fallback);
+	}).catch(fallback).catch(function () {});
 };
 
 function fallback() {
