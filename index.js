@@ -3,6 +3,7 @@ var npmconf = require('npmconf');
 var pify = require('pify');
 var Promise = require('pinkie-promise');
 var execa = require('execa');
+var passwdUser = require('passwd-user');
 var fullname;
 var first = true;
 
@@ -30,18 +31,11 @@ module.exports = function () {
 
 function fallback() {
 	if (process.platform === 'darwin') {
-		return execa('id', ['-P'])
-			.then(function (res) {
-				fullname = res.stdout.split(':')[7];
-
-				if (!fullname) {
-					throw new Error();
-				}
-
-				return fullname;
+		return passwdUser(process.getuid())
+			.then(function (user) {
+				return user.fullname;
 			})
 			.catch(function () {
-				// `id -P` should never fail as far as I know, but just in case:
 				return execa('osascript', ['-e', '"long user name of (system info)"'])
 					.then(function (res) {
 						fullname = res.stdout;
@@ -73,15 +67,21 @@ function fallback() {
 			});
 	}
 
-	return execa('getent', ['passwd', '$(whoami)'])
-		.then(function (res) {
-			fullname = (res.stdout.split(':')[4] || '').replace(/,.*/, '');
+	return passwdUser(process.getuid())
+		.then(function (user) {
+			return user.fullname;
+		})
+		.catch(function () {
+			return execa('getent', ['passwd', '$(whoami)'])
+				.then(function (res) {
+					fullname = (res.stdout.split(':')[4] || '').replace(/,.*/, '');
 
-			if (!fullname) {
-				throw new Error();
-			}
+					if (!fullname) {
+						throw new Error();
+					}
 
-			return fullname;
+					return fullname;
+				});
 		})
 		.catch(function () {
 			return execa('git', ['config', '--global', 'user.name'])

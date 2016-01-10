@@ -36,6 +36,7 @@
   "dependencies": {
     "execa": "^0.2.1",
     "npmconf": "^2.1.1",
+    "passwd-user": "^2.0.0",
     "pify": "^2.2.0",
     "pinkie-promise": "^2.0.0"
   },
