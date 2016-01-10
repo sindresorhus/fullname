@@ -1,11 +1,10 @@
 'use strict';
-var childProcess = require('child_process');
 var npmconf = require('npmconf');
 var pify = require('pify');
 var Promise = require('pinkie-promise');
+var execa = require('execa');
 var fullname;
 var first = true;
-var exec = pify(childProcess.exec, Promise);
 
 module.exports = function () {
 	if (!first) {
@@ -31,9 +30,9 @@ module.exports = function () {
 
 function fallback() {
 	if (process.platform === 'darwin') {
-		return exec('id -P')
-			.then(function (stdout) {
-				fullname = stdout.trim().split(':')[7];
+		return execa('id', ['-P'])
+			.then(function (res) {
+				fullname = res.stdout.split(':')[7];
 
 				if (!fullname) {
 					throw new Error();
@@ -43,9 +42,9 @@ function fallback() {
 			})
 			.catch(function () {
 				// `id -P` should never fail as far as I know, but just in case:
-				return exec('osascript -e "long user name of (system info)"')
-					.then(function (stdout) {
-						fullname = stdout.trim();
+				return execa('osascript', ['-e', '"long user name of (system info)"'])
+					.then(function (res) {
+						fullname = res.stdout;
 
 						return fullname;
 					});
@@ -54,9 +53,9 @@ function fallback() {
 
 	if (process.platform === 'win32') {
 		// try git first since fullname is usually not set by default in the system on Windows 7+
-		return exec('git config --global user.name')
-			.then(function (stdout) {
-				fullname = stdout.trim();
+		return execa('git', ['config', '--global', 'user.name'])
+			.then(function (res) {
+				fullname = res.stdout;
 
 				if (!fullname) {
 					throw new Error();
@@ -65,18 +64,18 @@ function fallback() {
 				return fullname;
 			})
 			.catch(function () {
-				return exec('wmic useraccount where name="%username%" get fullname')
-					.then(function (stdout) {
-						fullname = stdout.replace('FullName', '').trim();
+				return execa('wmic', ['useraccount', 'where', 'name="%username%"', 'get', 'fullname'])
+					.then(function (res) {
+						fullname = res.stdout.replace('FullName', '');
 
 						return fullname;
 					});
 			});
 	}
 
-	return exec('getent passwd $(whoami)')
-		.then(function (stdout) {
-			fullname = (stdout.trim().split(':')[4] || '').replace(/,.*/, '');
+	return execa('getent', ['passwd', '$(whoami)'])
+		.then(function (res) {
+			fullname = (res.stdout.split(':')[4] || '').replace(/,.*/, '');
 
 			if (!fullname) {
 				throw new Error();
@@ -85,9 +84,9 @@ function fallback() {
 			return fullname;
 		})
 		.catch(function () {
-			return exec('git config --global user.name')
-				.then(function (stdout) {
-					fullname = stdout.trim();
+			return execa('git', ['config', '--global', 'user.name'])
+				.then(function (res) {
+					fullname = res.stdout;
 
 					return fullname;
 				});
