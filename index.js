@@ -1,13 +1,12 @@
 'use strict';
-var childProcess = require('child_process');
-var npmconf = require('npmconf');
-var pify = require('pify');
-var Promise = require('pinkie-promise');
-var fullname;
-var first = true;
-var exec = pify(childProcess.exec, Promise);
+const npmconf = require('npmconf');
+const pify = require('pify');
+const execa = require('execa');
+const passwdUser = require('passwd-user');
+let fullname;
+let first = true;
 
-module.exports = function () {
+module.exports = () => {
 	if (!first) {
 		return Promise.resolve(fullname);
 	}
@@ -18,78 +17,63 @@ module.exports = function () {
 		return Promise.resolve(fullname);
 	}
 
-	return pify(npmconf.load, Promise)().then(function (conf) {
+	return pify(npmconf.load)().then(conf => {
 		fullname = conf.get('init.author.name');
 
 		if (!fullname) {
-			return fallback();
+			return fallback().then(() => fullname);
 		}
 
 		return fullname;
-	}).catch(fallback).catch(function () {});
+	}).catch(fallback).then(() => fullname).catch(() => {});
 };
 
 function fallback() {
 	if (process.platform === 'darwin') {
-		return exec('id -P')
-			.then(function (stdout) {
-				fullname = stdout.trim().split(':')[7];
-
-				if (!fullname) {
-					throw new Error();
-				}
-
-				return fullname;
-			})
-			.catch(function () {
-				// `id -P` should never fail as far as I know, but just in case:
-				return exec('osascript -e "long user name of (system info)"')
-					.then(function (stdout) {
-						fullname = stdout.trim();
-
-						return fullname;
-					});
+		return passwdUser(process.getuid())
+			.then(user => fullname = user.fullname)
+			.catch(() => {
+				return execa('osascript', ['-e', '"long user name of (system info)"'])
+					.then(res => fullname = res.stdout);
 			});
 	}
 
 	if (process.platform === 'win32') {
 		// try git first since fullname is usually not set by default in the system on Windows 7+
-		return exec('git config --global user.name')
-			.then(function (stdout) {
-				fullname = stdout.trim();
+		return execa('git', ['config', '--global', 'user.name'])
+			.then(res => {
+				fullname = res.stdout;
 
 				if (!fullname) {
 					throw new Error();
 				}
-
-				return fullname;
 			})
-			.catch(function () {
-				return exec('wmic useraccount where name="%username%" get fullname')
-					.then(function (stdout) {
-						fullname = stdout.replace('FullName', '').trim();
-
-						return fullname;
-					});
+			.catch(() => {
+				return execa('wmic', ['useraccount', 'where', 'name="%username%"', 'get', 'fullname'])
+					.then(res => fullname = res.stdout.replace('FullName', ''));
 			});
 	}
 
-	return exec('getent passwd $(whoami)')
-		.then(function (stdout) {
-			fullname = (stdout.trim().split(':')[4] || '').replace(/,.*/, '');
+	return passwdUser(process.getuid())
+		.then(user => {
+			fullname = user.fullname;
 
 			if (!fullname) {
 				throw new Error();
 			}
-
-			return fullname;
 		})
-		.catch(function () {
-			return exec('git config --global user.name')
-				.then(function (stdout) {
-					fullname = stdout.trim();
+		.catch(() => {
+			return execa.shell('getent passwd $(whoami)')
+				.then(res => {
+					fullname = (res.stdout.split(':')[4] || '').replace(/,.*/, '');
 
-					return fullname;
+					if (!fullname) {
+						throw new Error();
+					}
 				});
+		})
+		.catch(() => {
+			return execa('git', ['config', '--global', 'user.name'])
+				.then(res => fullname = res.stdout);
 		});
 }
