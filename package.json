@@ -35,9 +35,8 @@
   ],
   "dependencies": {
     "execa": "^0.4.0",
-    "npmconf": "^2.1.1",
     "passwd-user": "^2.1.0",
-    "pify": "^2.2.0"
+    "rc": "^1.1.6"
   },
   "devDependencies": {
     "ava": "*",

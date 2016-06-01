@@ -1,6 +1,4 @@
 'use strict';
-const npmconf = require('npmconf');
-const pify = require('pify');
 const execa = require('execa');
 const passwdUser = require('passwd-user');
 let fullname;
@@ -33,8 +31,8 @@ module.exports = () => {
 		return Promise.resolve(fullname);
 	}
 
-	return pify(npmconf.load)().then(conf => {
-		fullname = conf.get('init.author.name');
+	return Promise.resolve().then(() => {
+		fullname = require('rc')('npm')['init-author-name'];
 
 		if (!fullname) {
 			return fallback().then(() => fullname);
