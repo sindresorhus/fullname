@@ -35,4 +35,4 @@ In the rare case a name can't be found, you could fall back to [`username`](http
 
 ## License
 
-MIT © [Sindre Sorhus](http://sindresorhus.com)
+MIT © [Sindre Sorhus](https://sindresorhus.com)

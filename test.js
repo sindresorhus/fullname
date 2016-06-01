@@ -1,9 +1,8 @@
 import test from 'ava';
-import fn from './';
+import m from './';
 
 test(async t => {
-	const fullname = await fn();
-
+	const fullname = await m();
 	t.is(typeof fullname, 'string');
 	t.true(fullname.length > 1);
 });
