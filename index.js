@@ -6,6 +6,15 @@ const passwdUser = require('passwd-user');
 let fullname;
 let first = true;
 
+function getEnvVar() {
+	const env = process.env;
+
+	return env.GIT_AUTHOR_NAME ||
+		env.GIT_COMMITTER_NAME ||
+		env.HGUSER || // Mercurial
+		env.C9_USER; // Cloud9
+}
+
 module.exports = () => {
 	if (!first) {
 		return Promise.resolve(fullname);
@@ -14,6 +23,13 @@ module.exports = () => {
 	first = false;
 
 	if (fullname) {
+		return Promise.resolve(fullname);
+	}
+
+	const envVar = getEnvVar();
+
+	if (envVar) {
+		fullname = envVar;
 		return Promise.resolve(fullname);
 	}
 
