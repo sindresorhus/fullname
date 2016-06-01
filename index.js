@@ -46,7 +46,7 @@ module.exports = () => {
 
 function fallback() {
 	if (process.platform === 'darwin') {
-		return passwdUser(process.getuid())
+		return passwdUser()
 			.then(user => {
 				fullname = user.fullname;
 				return fullname;
@@ -78,7 +78,7 @@ function fallback() {
 			});
 	}
 
-	return passwdUser(process.getuid())
+	return passwdUser()
 		.then(user => {
 			fullname = user.fullname;
 
