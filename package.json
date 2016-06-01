@@ -34,7 +34,7 @@
     "uid"
   ],
   "dependencies": {
-    "execa": "^0.2.1",
+    "execa": "^0.4.0",
     "npmconf": "^2.1.1",
     "passwd-user": "^2.0.0",
     "pify": "^2.2.0"

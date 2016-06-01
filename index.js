@@ -47,10 +47,15 @@ module.exports = () => {
 function fallback() {
 	if (process.platform === 'darwin') {
 		return passwdUser(process.getuid())
-			.then(user => fullname = user.fullname)
+			.then(user => {
+				fullname = user.fullname;
+				return fullname;
+			})
 			.catch(() => {
-				return execa('osascript', ['-e', '"long user name of (system info)"'])
-					.then(res => fullname = res.stdout);
+				return execa.stdout('osascript', ['-e', '"long user name of (system info)"']).then(stdout => {
+					fullname = stdout;
+					return fullname;
+				});
 			});
 	}
 
@@ -65,8 +70,11 @@ function fallback() {
 				}
 			})
 			.catch(() => {
-				return execa('wmic', ['useraccount', 'where', 'name="%username%"', 'get', 'fullname'])
-					.then(res => fullname = res.stdout.replace('FullName', ''));
+				return execa.stdout('wmic', ['useraccount', 'where', 'name="%username%"', 'get', 'fullname'])
+					.then(stdout => {
+						fullname = stdout.replace('FullName', '');
+						return fullname;
+					});
 			});
 	}
 
@@ -89,7 +97,10 @@ function fallback() {
 				});
 		})
 		.catch(() => {
-			return execa('git', ['config', '--global', 'user.name'])
-				.then(res => fullname = res.stdout);
+			return execa.stdout('git', ['config', '--global', 'user.name'])
+				.then(stdout => {
+					fullname = stdout;
+					return fullname;
+				});
 		});
 }
