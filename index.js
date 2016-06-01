@@ -52,7 +52,7 @@ function fallback() {
 				return fullname;
 			})
 			.catch(() => {
-				return execa.stdout('osascript', ['-e', '"long user name of (system info)"']).then(stdout => {
+				return execa.stdout('osascript', ['-e', 'long user name of (system info)']).then(stdout => {
 					fullname = stdout;
 					return fullname;
 				});
