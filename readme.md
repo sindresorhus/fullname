@@ -9,7 +9,7 @@
 $ npm install --save fullname
 ```
 
-Tested on OS X, Linux, and Windows.
+Tested on macOS, Linux, and Windows.
 
 
 ## Usage
