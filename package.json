@@ -35,12 +35,15 @@
   ],
   "dependencies": {
     "execa": "^0.4.0",
+    "mem": "^1.1.0",
+    "p-any": "^1.0.0",
     "passwd-user": "^2.1.0",
     "rc": "^1.1.6"
   },
   "devDependencies": {
     "ava": "*",
-    "xo": "*"
+    "xo": "*",
+    "mock-require": "^2.0.0"
   },
   "xo": {
     "esnext": true
