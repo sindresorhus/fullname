@@ -37,13 +37,15 @@
     "execa": "^0.4.0",
     "mem": "^1.1.0",
     "p-any": "^1.0.0",
+    "p-try": "^1.0.0",
     "passwd-user": "^2.1.0",
     "rc": "^1.1.6"
   },
   "devDependencies": {
     "ava": "*",
-    "xo": "*",
-    "mock-require": "^2.0.0"
+    "mock-require": "^2.0.0",
+    "require-uncached": "^1.0.3",
+    "xo": "*"
   },
   "xo": {
     "esnext": true

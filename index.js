@@ -4,46 +4,30 @@ const mem = require('mem');
 const execa = require('execa');
 const passwdUser = require('passwd-user');
 const pAny = require('p-any');
+const pTry = require('p-try');
 
 function checkEnv() {
-	return new Promise((resolve, reject) => {
+	return pTry(() => {
 		const env = process.env;
 		const fullname = env.GIT_AUTHOR_NAME ||
 			env.GIT_COMMITTER_NAME ||
 			env.HGUSER || // Mercurial
 			env.C9_USER; // Cloud9
 
-		if (!fullname) {
-			reject();
-			return;
-		}
-
-		resolve(fullname);
+		return fullname || Promise.reject();
 	});
 }
 
 function checkAuthorName() {
-	return new Promise((resolve, reject) => {
+	return pTry(() => {
 		const fullname = require('rc')('npm')['init-author-name'];
-
-		if (!fullname) {
-			reject();
-			return;
-		}
-
-		resolve(fullname);
+		return fullname || Promise.reject();
 	});
 }
 
 function checkPasswd() {
 	return passwdUser()
-		.then(user => {
-			if (!user.fullname) {
-				throw new Error();
-			}
-
-			return user.fullname;
-		});
+		.then(user => user.fullname || Promise.reject());
 }
 
 function checkGit() {
@@ -60,23 +44,14 @@ function checkWmic() {
 	return execa.stdout('wmic', ['useraccount', 'where', 'name="%username%"', 'get', 'fullname'])
 		.then(stdout => {
 			const fullname = stdout.replace('FullName', '');
-
-			if (!fullname) {
-				throw new Error();
-			}
-
-			return fullname;
+			return fullname || Promise.reject();
 		});
 }
 
 function checkGetEnt() {
 	return execa.shell('getent passwd $(whoami)').then(res => {
 		const fullname = (res.stdout.split(':')[4] || '').replace(/,.*/, '');
-		if (!fullname) {
-			throw new Error();
-		}
-
-		return fullname;
+		return fullname || Promise.reject();
 	});
 }
 

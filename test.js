@@ -1,6 +1,7 @@
 import {serial as test} from 'ava';
 import mem from 'mem';
 import mock from 'mock-require';
+import requireUncached from 'require-uncached';
 
 let originalEnv;
 let originalPlatform;
@@ -25,7 +26,7 @@ test.after(() => {
 });
 
 test('should get fullname from env var', async t => {
-	const m = require('./');
+	const m = requireUncached('./');
 	mem.clear(m);
 
 	process.env.GIT_AUTHOR_NAME = 'TEST-ENV-FULL-NAME';
@@ -40,7 +41,7 @@ test('should get value from init-author-name', async t => {
 		'init-author-name': 'TEST-INIT-AUTHOR-FULL-NAME'
 	}));
 
-	const m = require('./');
+	const m = requireUncached('./');
 	mem.clear(m);
 
 	const fullname = await m();
@@ -59,9 +60,7 @@ test('should get value from passwdUser for darwin platform', async t => {
 		fullname: 'TEST-PASSWD-FULL-NAME'
 	}));
 
-	// Required to delete require cache so the mock to passwd-usr is taken into consideration
-	delete require.cache[require.resolve('./')];
-	const m = require('./');
+	const m = requireUncached('./');
 	mem.clear(m);
 
 	const fullname = await m();
@@ -82,9 +81,7 @@ test('should get value from osascript for darwin platform if passwdUser returns 
 
 	mock('passwd-user', () => new Promise(resolve => resolve()));
 
-	// Required to delete require cache so the mock to passwd-usr is taken into consideration
-	delete require.cache[require.resolve('./')];
-	const m = require('./');
+	const m = requireUncached('./');
 	mem.clear(m);
 
 	const fullname = await m();
@@ -105,9 +102,7 @@ test('should get value from osascript for darwin platform if passwdUser rejects'
 
 	mock('passwd-user', () => new Promise((resolve, reject) => reject()));
 
-	// Required to delete require cache so the mock to passwd-usr is taken into consideration
-	delete require.cache[require.resolve('./')];
-	const m = require('./');
+	const m = requireUncached('./');
 	mem.clear(m);
 
 	const fullname = await m();
@@ -134,9 +129,7 @@ test('should get value from git global user for win32 platform', async t => {
 
 	mock('passwd-user', () => new Promise((resolve, reject) => reject()));
 
-	// Required to delete require cache so the mock to passwd-usr is taken into consideration
-	delete require.cache[require.resolve('./')];
-	const m = require('./');
+	const m = requireUncached('./');
 	mem.clear(m);
 
 	const fullname = await m();
@@ -161,9 +154,7 @@ test('should get value from wmic for win32 platform if git global returns empty 
 		value: 'win32'
 	});
 
-	// Required to delete require cache so the mock to passwd-usr is taken into consideration
-	delete require.cache[require.resolve('./')];
-	const m = require('./');
+	const m = requireUncached('./');
 	mem.clear(m);
 
 	const fullname = await m();
@@ -188,9 +179,7 @@ test('should get value from wmic for win32 platform if git global rejects', asyn
 		value: 'win32'
 	});
 
-	// Required to delete require cache so the mock to passwd-usr is taken into consideration
-	delete require.cache[require.resolve('./')];
-	const m = require('./');
+	const m = requireUncached('./');
 	mem.clear(m);
 
 	const fullname = await m();
@@ -215,9 +204,7 @@ test('should get value from passwdUser for other platform and both other checks 
 		value: 'other'
 	});
 
-	// Required to delete require cache so the mock to passwd-usr is taken into consideration
-	delete require.cache[require.resolve('./')];
-	const m = require('./');
+	const m = requireUncached('./');
 	mem.clear(m);
 
 	const fullname = await m();
@@ -242,9 +229,7 @@ test('should get value from getent for other platform and both other checks fail
 		value: 'other'
 	});
 
-	// Required to delete require cache so the mock to passwd-usr is taken into consideration
-	delete require.cache[require.resolve('./')];
-	const m = require('./');
+	const m = requireUncached('./');
 	mem.clear(m);
 
 	const fullname = await m();
@@ -266,9 +251,7 @@ test('should get value from git for other platform and both other checks fail', 
 		value: 'other'
 	});
 
-	// Required to delete require cache so the mock to passwd-usr is taken into consideration
-	delete require.cache[require.resolve('./')];
-	const m = require('./');
+	const m = requireUncached('./');
 	mem.clear(m);
 
 	const fullname = await m();
@@ -294,9 +277,7 @@ test('should get value from passwdUser for other platform and both other checks 
 		value: 'other'
 	});
 
-	// Required to delete require cache so the mock to passwd-usr is taken into consideration
-	delete require.cache[require.resolve('./')];
-	const m = require('./');
+	const m = requireUncached('./');
 	mem.clear(m);
 
 	const fullname = await m();
@@ -321,9 +302,7 @@ test('should get value from getent for other platform and both other checks retu
 		value: 'other'
 	});
 
-	// Required to delete require cache so the mock to passwd-usr is taken into consideration
-	delete require.cache[require.resolve('./')];
-	const m = require('./');
+	const m = requireUncached('./');
 	mem.clear(m);
 
 	const fullname = await m();
@@ -347,9 +326,7 @@ test('should get value from git for other platform and both other checks return 
 		value: 'other'
 	});
 
-	// Required to delete require cache so the mock to passwd-usr is taken into consideration
-	delete require.cache[require.resolve('./')];
-	const m = require('./');
+	const m = requireUncached('./');
 	mem.clear(m);
 
 	const fullname = await m();
