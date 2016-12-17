@@ -1,104 +1,78 @@
 'use strict';
+
+const mem = require('mem');
 const execa = require('execa');
 const passwdUser = require('passwd-user');
-let fullname;
-let first = true;
+const pAny = require('p-any');
+const pTry = require('p-try');
 
-function getEnvVar() {
-	const env = process.env;
+function checkEnv() {
+	return pTry(() => {
+		const env = process.env;
+		const fullname = env.GIT_AUTHOR_NAME ||
+			env.GIT_COMMITTER_NAME ||
+			env.HGUSER || // Mercurial
+			env.C9_USER; // Cloud9
 
-	return env.GIT_AUTHOR_NAME ||
-		env.GIT_COMMITTER_NAME ||
-		env.HGUSER || // Mercurial
-		env.C9_USER; // Cloud9
+		return fullname || Promise.reject();
+	});
 }
 
-module.exports = () => {
-	if (!first) {
-		return Promise.resolve(fullname);
-	}
+function checkAuthorName() {
+	return pTry(() => {
+		const fullname = require('rc')('npm')['init-author-name'];
+		return fullname || Promise.reject();
+	});
+}
 
-	first = false;
+function checkPasswd() {
+	return passwdUser()
+		.then(user => user.fullname || Promise.reject());
+}
 
-	if (fullname) {
-		return Promise.resolve(fullname);
-	}
+function checkGit() {
+	return execa.stdout('git', ['config', '--global', 'user.name'])
+		.then(fullname => fullname || Promise.reject());
+}
 
-	const envVar = getEnvVar();
+function checkOsaScript() {
+	return execa.stdout('osascript', ['-e', 'long user name of (system info)'])
+		.then(fullname => fullname || Promise.reject());
+}
 
-	if (envVar) {
-		fullname = envVar;
-		return Promise.resolve(fullname);
-	}
+function checkWmic() {
+	return execa.stdout('wmic', ['useraccount', 'where', 'name="%username%"', 'get', 'fullname'])
+		.then(stdout => {
+			const fullname = stdout.replace('FullName', '');
+			return fullname || Promise.reject();
+		});
+}
 
-	return Promise.resolve().then(() => {
-		fullname = require('rc')('npm')['init-author-name'];
-
-		if (!fullname) {
-			return fallback().then(() => fullname);
-		}
-
-		return fullname;
-	}).catch(fallback).then(() => fullname).catch(() => {});
-};
+function checkGetEnt() {
+	return execa.shell('getent passwd $(whoami)').then(res => {
+		const fullname = (res.stdout.split(':')[4] || '').replace(/,.*/, '');
+		return fullname || Promise.reject();
+	});
+}
 
 function fallback() {
 	if (process.platform === 'darwin') {
-		return passwdUser()
-			.then(user => {
-				fullname = user.fullname;
-				return fullname;
-			})
-			.catch(() => {
-				return execa.stdout('osascript', ['-e', 'long user name of (system info)']).then(stdout => {
-					fullname = stdout;
-					return fullname;
-				});
-			});
+		return pAny([checkPasswd(), checkOsaScript()]);
 	}
 
 	if (process.platform === 'win32') {
-		// try git first since fullname is usually not set by default in the system on Windows 7+
-		return execa('git', ['config', '--global', 'user.name'])
-			.then(res => {
-				fullname = res.stdout;
-
-				if (!fullname) {
-					throw new Error();
-				}
-			})
-			.catch(() => {
-				return execa.stdout('wmic', ['useraccount', 'where', 'name="%username%"', 'get', 'fullname'])
-					.then(stdout => {
-						fullname = stdout.replace('FullName', '');
-						return fullname;
-					});
-			});
+		// Fullname is usually not set by default in the system on Windows 7+
+		return pAny([checkGit(), checkWmic()]);
 	}
 
-	return passwdUser()
-		.then(user => {
-			fullname = user.fullname;
-
-			if (!fullname) {
-				throw new Error();
-			}
-		})
-		.catch(() => {
-			return execa.shell('getent passwd $(whoami)')
-				.then(res => {
-					fullname = (res.stdout.split(':')[4] || '').replace(/,.*/, '');
-
-					if (!fullname) {
-						throw new Error();
-					}
-				});
-		})
-		.catch(() => {
-			return execa.stdout('git', ['config', '--global', 'user.name'])
-				.then(stdout => {
-					fullname = stdout;
-					return fullname;
-				});
-		});
+	return pAny([checkPasswd(), checkGetEnt(), checkGit()]);
 }
+
+function getFullName() {
+	return checkEnv()
+		.catch(checkAuthorName)
+		.catch(fallback)
+		.catch(() => {});
+}
+
+module.exports = mem(getFullName);
