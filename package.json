@@ -35,6 +35,7 @@
   ],
   "dependencies": {
     "execa": "^0.4.0",
+    "filter-obj": "^1.1.0",
     "mem": "^1.1.0",
     "p-any": "^1.0.0",
     "p-try": "^1.0.0",
