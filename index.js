@@ -5,14 +5,21 @@ const execa = require('execa');
 const passwdUser = require('passwd-user');
 const pAny = require('p-any');
 const pTry = require('p-try');
+const filterObj = require('filter-obj');
+
+const envVars = [
+	'GIT_AUTHOR_NAME',
+	'GIT_COMMITTER_NAME',
+	'HGUSER', // Mercurial
+	'C9_USER' // Cloud9
+];
 
 function checkEnv() {
 	return pTry(() => {
 		const env = process.env;
-		const fullname = env.GIT_AUTHOR_NAME ||
-			env.GIT_COMMITTER_NAME ||
-			env.HGUSER || // Mercurial
-			env.C9_USER; // Cloud9
+
+		const varName = envVars.find(x => env[x]);
+		const fullname = varName && env[varName];
 
 		return fullname || Promise.reject();
 	});
@@ -75,4 +82,8 @@ function getFullName() {
 		.catch(() => {});
 }
 
-module.exports = mem(getFullName);
+module.exports = mem(getFullName, {
+	cacheKey() {
+		return JSON.stringify(filterObj(process.env, envVars));
+	}
+});

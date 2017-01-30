@@ -36,6 +36,22 @@ test('should get fullname from env var', async t => {
 	t.is(fullname, 'TEST-ENV-FULL-NAME');
 });
 
+test('respects changed env vars', async t => {
+	const m = requireUncached('./');
+	mem.clear(m);
+
+	process.env.GIT_AUTHOR_NAME = 'NAME-1';
+	const fullname1 = await m();
+	process.env.GIT_AUTHOR_NAME = 'NAME-2';
+	const fullname2 = await m();
+
+	t.is(typeof fullname1, 'string');
+	t.is(fullname1, 'NAME-1');
+	t.is(typeof fullname2, 'string');
+	t.is(fullname2, 'NAME-2');
+	t.not(fullname1, fullname2);
+});
+
 test('should get value from init-author-name', async t => {
 	mock('rc', () => ({
 		'init-author-name': 'TEST-INIT-AUTHOR-FULL-NAME'
