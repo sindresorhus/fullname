@@ -1,7 +1,7 @@
 import {serial as test} from 'ava';
 import mem from 'mem';
 import mock from 'mock-require';
-import requireUncached from 'require-uncached';
+import importFresh from 'import-fresh';
 
 let originalEnv;
 let originalPlatform;
@@ -26,7 +26,7 @@ test.after(() => {
 });
 
 test('should get fullname from env var', async t => {
-	const m = requireUncached('./');
+	const m = importFresh('.');
 	mem.clear(m);
 
 	process.env.GIT_AUTHOR_NAME = 'TEST-ENV-FULL-NAME';
@@ -37,7 +37,7 @@ test('should get fullname from env var', async t => {
 });
 
 test('respects changed env vars', async t => {
-	const m = requireUncached('./');
+	const m = importFresh('.');
 	mem.clear(m);
 
 	process.env.GIT_AUTHOR_NAME = 'NAME-1';
@@ -57,17 +57,16 @@ test('should get value from init-author-name', async t => {
 		'init-author-name': 'TEST-INIT-AUTHOR-FULL-NAME'
 	}));
 
-	const m = requireUncached('./');
+	const m = importFresh('.');
 	mem.clear(m);
 
 	const fullname = await m();
-
 	t.is(typeof fullname, 'string');
 	t.is(fullname, 'TEST-INIT-AUTHOR-FULL-NAME');
 });
 
 test('should get value from passwdUser for darwin platform', async t => {
-	// redefine process.platform
+	// Redefine process.platform
 	Object.defineProperty(process, 'platform', {
 		value: 'darwin'
 	});
@@ -76,59 +75,56 @@ test('should get value from passwdUser for darwin platform', async t => {
 		fullname: 'TEST-PASSWD-FULL-NAME'
 	}));
 
-	const m = requireUncached('./');
+	const m = importFresh('.');
 	mem.clear(m);
 
 	const fullname = await m();
-
 	t.is(typeof fullname, 'string');
 	t.is(fullname, 'TEST-PASSWD-FULL-NAME');
 });
 
 test('should get value from osascript for darwin platform if passwdUser returns empty username', async t => {
-	// redefine process.platform
+	// Redefine process.platform
 	Object.defineProperty(process, 'platform', {
 		value: 'darwin'
 	});
 
 	mock('execa', {
-		stdout: () => new Promise(resolve => resolve('TEST-OSASCRIPT-FULL-NAME'))
+		stdout: () => Promise.resolve('TEST-OSASCRIPT-FULL-NAME')
 	});
 
-	mock('passwd-user', () => new Promise(resolve => resolve()));
+	mock('passwd-user', () => Promise.resolve());
 
-	const m = requireUncached('./');
+	const m = importFresh('.');
 	mem.clear(m);
 
 	const fullname = await m();
-
 	t.is(typeof fullname, 'string');
 	t.is(fullname, 'TEST-OSASCRIPT-FULL-NAME');
 });
 
 test('should get value from osascript for darwin platform if passwdUser rejects', async t => {
-	// redefine process.platform
+	// Redefine process.platform
 	Object.defineProperty(process, 'platform', {
 		value: 'darwin'
 	});
 
 	mock('execa', {
-		stdout: () => new Promise(resolve => resolve('TEST-OSASCRIPT-FULL-NAME'))
+		stdout: () => Promise.resolve('TEST-OSASCRIPT-FULL-NAME')
 	});
 
-	mock('passwd-user', () => new Promise((resolve, reject) => reject()));
+	mock('passwd-user', () => Promise.reject());
 
-	const m = requireUncached('./');
+	const m = importFresh('.');
 	mem.clear(m);
 
 	const fullname = await m();
-
 	t.is(typeof fullname, 'string');
 	t.is(fullname, 'TEST-OSASCRIPT-FULL-NAME');
 });
 
 test('should get value from git global user for win32 platform', async t => {
-	// redefine process.platform
+	// Redefine process.platform
 	Object.defineProperty(process, 'platform', {
 		value: 'win32'
 	});
@@ -136,20 +132,19 @@ test('should get value from git global user for win32 platform', async t => {
 	mock('execa', {
 		stdout: first => {
 			if (first === 'git') {
-				return new Promise(resolve => resolve('TEST-GIT-GLOBAL-FULL-NAME'));
+				return Promise.resolve('TEST-GIT-GLOBAL-FULL-NAME');
 			}
 
-			return new Promise(resolve => resolve(''));
+			return Promise.resolve('');
 		}
 	});
 
-	mock('passwd-user', () => new Promise((resolve, reject) => reject()));
+	mock('passwd-user', () => Promise.reject());
 
-	const m = requireUncached('./');
+	const m = importFresh('.');
 	mem.clear(m);
 
 	const fullname = await m();
-
 	t.is(typeof fullname, 'string');
 	t.is(fullname, 'TEST-GIT-GLOBAL-FULL-NAME');
 });
@@ -158,23 +153,22 @@ test('should get value from wmic for win32 platform if git global returns empty 
 	mock('execa', {
 		stdout: first => {
 			if (first === 'wmic') {
-				return new Promise(resolve => resolve('TEST-WMIC-FULL-NAME'));
+				return Promise.resolve('TEST-WMIC-FULL-NAME');
 			}
 
-			return new Promise(resolve => resolve(''));
+			return Promise.resolve('');
 		}
 	});
 
-	// redefine process.platform
+	// Redefine process.platform
 	Object.defineProperty(process, 'platform', {
 		value: 'win32'
 	});
 
-	const m = requireUncached('./');
+	const m = importFresh('.');
 	mem.clear(m);
 
 	const fullname = await m();
-
 	t.is(typeof fullname, 'string');
 	t.is(fullname, 'TEST-WMIC-FULL-NAME');
 });
@@ -183,23 +177,22 @@ test('should get value from wmic for win32 platform if git global rejects', asyn
 	mock('execa', {
 		stdout: first => {
 			if (first === 'wmic') {
-				return new Promise(resolve => resolve('TEST-WMIC-FULL-NAME'));
+				return Promise.resolve('TEST-WMIC-FULL-NAME');
 			}
 
-			return new Promise((resolve, reject) => reject('FAILED'));
+			return Promise.reject(new Error('FAILED'));
 		}
 	});
 
-	// redefine process.platform
+	// Redefine process.platform
 	Object.defineProperty(process, 'platform', {
 		value: 'win32'
 	});
 
-	const m = requireUncached('./');
+	const m = importFresh('.');
 	mem.clear(m);
 
 	const fullname = await m();
-
 	t.is(typeof fullname, 'string');
 	t.is(fullname, 'TEST-WMIC-FULL-NAME');
 });
@@ -210,68 +203,66 @@ test('should get value from passwdUser for other platform and both other checks 
 	}));
 
 	mock('execa', {
-		stdout: () => new Promise((resolve, reject) => reject('FAILED')),
-		// getent result
-		shell: () => new Promise((resolve, reject) => reject('FAILED'))
+		stdout: () => Promise.reject(new Error('FAILED')),
+		// Getent result
+		shell: () => Promise.reject(new Error('FAILED'))
 	});
 
-	// redefine process.platform
+	// Redefine process.platform
 	Object.defineProperty(process, 'platform', {
 		value: 'other'
 	});
 
-	const m = requireUncached('./');
+	const m = importFresh('.');
 	mem.clear(m);
 
 	const fullname = await m();
-
 	t.is(typeof fullname, 'string');
 	t.is(fullname, 'TEST-PASSWD-FULL-NAME');
 });
 
 test('should get value from getent for other platform and both other checks fail', async t => {
 	mock('execa', {
-		stdout: () => new Promise((resolve, reject) => reject('FAILED')),
-		// getent result
-		shell: () => new Promise(resolve => resolve({
+		stdout: () => Promise.reject(new Error('FAILED')),
+		// Getent result
+		shell: () => Promise.resolve({
 			stdout: '1:2:3:4:TEST-GETENT-FULL-NAME'
-		}))
+		})
 	});
 
-	mock('passwd-user', () => new Promise((resolve, reject) => reject('FAILED')));
+	mock('passwd-user', () => Promise.reject(new Error('FAILED')));
 
-	// redefine process.platform
+	// Redefine process.platform
 	Object.defineProperty(process, 'platform', {
 		value: 'other'
 	});
 
-	const m = requireUncached('./');
+	const m = importFresh('.');
 	mem.clear(m);
 
 	const fullname = await m();
-
 	t.is(typeof fullname, 'string');
 	t.is(fullname, 'TEST-GETENT-FULL-NAME');
 });
 
 test('should get value from git for other platform and both other checks fail', async t => {
 	mock('execa', {
-		stdout: () => new Promise(resolve => resolve('TEST-GIT-FULL-NAME')),
-		// getent result
-		shell: () => new Promise((resolve, reject) => reject('FAILED'))
+		stdout: () => Promise.resolve('TEST-GIT-FULL-NAME'),
+		// Getent result
+		shell: () => Promise.reject(new Error('FAILED'))
 	});
-	mock('passwd-user', () => new Promise((resolve, reject) => reject('FAILED')));
 
-	// redefine process.platform
+	mock('passwd-user', () => Promise.reject(new Error('FAILED')));
+
+	// Redefine process.platform
 	Object.defineProperty(process, 'platform', {
 		value: 'other'
 	});
 
-	const m = requireUncached('./');
+	const m = importFresh('.');
 	mem.clear(m);
 
 	const fullname = await m();
-
 	t.is(typeof fullname, 'string');
 	t.is(fullname, 'TEST-GIT-FULL-NAME');
 });
@@ -282,71 +273,68 @@ test('should get value from passwdUser for other platform and both other checks 
 	}));
 
 	mock('execa', {
-		// checkGit result
-		stdout: () => new Promise(resolve => resolve('')),
-		// getent result
-		shell: () => new Promise(resolve => resolve(''))
+		// CheckGit result
+		stdout: () => Promise.resolve(''),
+		// Getent result
+		shell: () => Promise.resolve('')
 	});
 
-	// redefine process.platform
+	// Redefine process.platform
 	Object.defineProperty(process, 'platform', {
 		value: 'other'
 	});
 
-	const m = requireUncached('./');
+	const m = importFresh('.');
 	mem.clear(m);
 
 	const fullname = await m();
-
 	t.is(typeof fullname, 'string');
 	t.is(fullname, 'TEST-PASSWD-FULL-NAME');
 });
 
 test('should get value from getent for other platform and both other checks return empty string', async t => {
 	mock('execa', {
-		// checkGit result
-		stdout: () => new Promise(resolve => resolve('')),
-		// getent result
-		shell: () => new Promise(resolve => resolve({
+		// CheckGit result
+		stdout: () => Promise.resolve(''),
+		// Getent result
+		shell: () => Promise.resolve({
 			stdout: '1:2:3:4:TEST-GETENT-FULL-NAME'
-		}))
+		})
 	});
-	mock('passwd-user', () => new Promise(resolve => resolve('')));
+	mock('passwd-user', () => Promise.resolve(''));
 
-	// redefine process.platform
+	// Redefine process.platform
 	Object.defineProperty(process, 'platform', {
 		value: 'other'
 	});
 
-	const m = requireUncached('./');
+	const m = importFresh('.');
 	mem.clear(m);
 
 	const fullname = await m();
-
 	t.is(typeof fullname, 'string');
 	t.is(fullname, 'TEST-GETENT-FULL-NAME');
 });
 
 test('should get value from git for other platform and both other checks return empty string', async t => {
 	mock('execa', {
-		// checkGit result
-		stdout: () => new Promise(resolve => resolve('TEST-GIT-FULL-NAME')),
-		// getent result
-		shell: () => new Promise(resolve => resolve(''))
+		// CheckGit result
+		stdout: () => Promise.resolve('TEST-GIT-FULL-NAME'),
+		// Getent result
+		shell: () => Promise.resolve('')
 	});
 
-	mock('passwd-user', () => new Promise(resolve => resolve('')));
+	mock('passwd-user', () => Promise.resolve(''));
 
-	// redefine process.platform
+	// Redefine process.platform
 	Object.defineProperty(process, 'platform', {
 		value: 'other'
 	});
 
-	const m = requireUncached('./');
+	const m = importFresh('.');
 	mem.clear(m);
 
 	const fullname = await m();
-
 	t.is(typeof fullname, 'string');
 	t.is(fullname, 'TEST-GIT-FULL-NAME');
 });

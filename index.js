@@ -1,5 +1,4 @@
 'use strict';
-
 const mem = require('mem');
 const execa = require('execa');
 const passwdUser = require('passwd-user');
@@ -17,7 +16,6 @@ const envVars = [
 function checkEnv() {
 	return pTry(() => {
 		const env = process.env;
-
 		const varName = envVars.find(x => env[x]);
 		const fullname = varName && env[varName];
 
