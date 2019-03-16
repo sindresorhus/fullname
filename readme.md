@@ -31,7 +31,7 @@ In the rare case a name can't be found, you could fall back to [`username`](http
 - [fullname-cli](https://github.com/sindresorhus/fullname-cli) - CLI for this module
 - [fullname-native](https://github.com/sindresorhus/fullname-native) - Native version of this module
 - [username](https://github.com/sindresorhus/username) - Get the username of the current user
-
+- [fullname](https://github.com/MarkTiedemann/fullname) - Windows binary for this module
 
 ## License
 

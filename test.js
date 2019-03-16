@@ -1,3 +1,4 @@
+import path from 'path';
 import {serial as test} from 'ava';
 import mem from 'mem';
 import mock from 'mock-require';
@@ -149,11 +150,11 @@ test('should get value from git global user for win32 platform', async t => {
 	t.is(fullname, 'TEST-GIT-GLOBAL-FULL-NAME');
 });
 
-test('should get value from wmic for win32 platform if git global returns empty username', async t => {
+test('should get value from fullname.exe for win32 platform if git global returns empty username', async t => {
 	mock('execa', {
 		stdout: first => {
-			if (first === 'wmic') {
-				return Promise.resolve('TEST-WMIC-FULL-NAME');
+			if (first === path.join(__dirname, 'fullname.exe')) {
+				return Promise.resolve('TEST-FULLNAME-EXE');
 			}
 
 			return Promise.resolve('');
@@ -170,14 +171,14 @@ test('should get value from wmic for win32 platform if git global returns empty 
 
 	const fullname = await m();
 	t.is(typeof fullname, 'string');
-	t.is(fullname, 'TEST-WMIC-FULL-NAME');
+	t.is(fullname, 'TEST-FULLNAME-EXE');
 });
 
-test('should get value from wmic for win32 platform if git global rejects', async t => {
+test('should get value from fullname.exe for win32 platform if git global rejects', async t => {
 	mock('execa', {
 		stdout: first => {
-			if (first === 'wmic') {
-				return Promise.resolve('TEST-WMIC-FULL-NAME');
+			if (first === path.join(__dirname, 'fullname.exe')) {
+				return Promise.resolve('TEST-FULLNAME-EXE');
 			}
 
 			return Promise.reject(new Error('FAILED'));
@@ -194,7 +195,7 @@ test('should get value from wmic for win32 platform if git global rejects', asyn
 
 	const fullname = await m();
 	t.is(typeof fullname, 'string');
-	t.is(fullname, 'TEST-WMIC-FULL-NAME');
+	t.is(fullname, 'TEST-FULLNAME-EXE');
 });
 
 test('should get value from passwdUser for other platform and both other checks fail', async t => {

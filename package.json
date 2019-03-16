@@ -34,18 +34,18 @@
     "uid"
   ],
   "dependencies": {
-    "execa": "^0.6.0",
+    "execa": "^1.0.0",
     "filter-obj": "^1.1.0",
-    "mem": "^1.1.0",
-    "p-any": "^1.0.0",
-    "p-try": "^1.0.0",
+    "mem": "^4.2.0",
+    "p-any": "^2.0.0",
+    "p-try": "^2.0.0",
     "passwd-user": "^2.1.0",
     "rc": "^1.1.6"
   },
   "devDependencies": {
     "ava": "*",
-    "import-fresh": "^2.0.0",
-    "mock-require": "^2.0.0",
+    "import-fresh": "^3.0.0",
+    "mock-require": "^3.0.0",
     "xo": "*"
   }
 }

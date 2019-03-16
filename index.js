@@ -1,4 +1,5 @@
 'use strict';
+const path = require('path');
 const mem = require('mem');
 const execa = require('execa');
 const passwdUser = require('passwd-user');
@@ -15,7 +16,7 @@ const envVars = [
 
 function checkEnv() {
 	return pTry(() => {
-		const env = process.env;
+		const {env} = process;
 		const varName = envVars.find(x => env[x]);
 		const fullname = varName && env[varName];
 
@@ -45,12 +46,8 @@ function checkOsaScript() {
 		.then(fullname => fullname || Promise.reject());
 }
 
-function checkWmic() {
-	return execa.stdout('wmic', ['useraccount', 'where', 'name="%username%"', 'get', 'fullname'])
-		.then(stdout => {
-			const fullname = stdout.replace('FullName', '');
-			return fullname || Promise.reject();
-		});
+function checkFullnameExe() {
+	return execa.stdout(path.join(__dirname, 'fullname.exe'));
 }
 
 function checkGetEnt() {
@@ -66,8 +63,7 @@ function fallback() {
 	}
 
 	if (process.platform === 'win32') {
-		// Fullname is usually not set by default in the system on Windows 7+
-		return pAny([checkGit(), checkWmic()]);
+		return pAny([checkGit(), checkFullnameExe()]);
 	}
 
 	return pAny([checkPasswd(), checkGetEnt(), checkGit()]);
