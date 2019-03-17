@@ -33,6 +33,7 @@ In the rare case a name can't be found, you could fall back to [`username`](http
 - [username](https://github.com/sindresorhus/username) - Get the username of the current user
 - [fullname](https://github.com/MarkTiedemann/fullname) - Windows binary for this module
 
+
 ## License
 
 MIT © [Sindre Sorhus](https://sindresorhus.com)
