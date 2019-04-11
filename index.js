@@ -15,7 +15,7 @@ const envVars = [
 
 function checkEnv() {
 	return pTry(() => {
-		const env = {process};
+		const {env} = process;
 		const varName = envVars.find(x => env[x]);
 		const fullname = varName && env[varName];
 
