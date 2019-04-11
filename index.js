@@ -46,9 +46,9 @@ function checkOsaScript() {
 }
 
 function checkWmic() {
-	return execa.stdout('wmic', ['useraccount', 'where', 'name="%username%"', 'get', 'fullname'])
+	return execa.stdout('wmic', ['useraccount', 'where', 'name="%username%"', 'get', 'fullname'], {shell: true})
 		.then(stdout => {
-			const fullname = stdout.replace('FullName', '');
+			const fullname = stdout.replace('FullName', '').trim();
 			return fullname || Promise.reject();
 		});
 }
