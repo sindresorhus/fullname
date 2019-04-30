@@ -1,12 +1,12 @@
 # fullname [![Build Status](https://travis-ci.org/sindresorhus/fullname.svg?branch=master)](https://travis-ci.org/sindresorhus/fullname)
 
-> Get the fullname of the current user
+> Get the full name of the current user
 
 
 ## Install
 
 ```
-$ npm install --save fullname
+$ npm install fullname
 ```
 
 Tested on macOS, Linux, and Windows.
@@ -15,12 +15,12 @@ Tested on macOS, Linux, and Windows.
 ## Usage
 
 ```js
-const fullname = require('fullname');
+const fullName = require('fullname');
 
-fullname().then(name => {
-	console.log(name);
+(async () => {
+	console.log(await fullName());
 	//=> 'Sindre Sorhus'
-});
+})();
 ```
 
 In the rare case a name can't be found, you could fall back to [`username`](https://github.com/sindresorhus/username).

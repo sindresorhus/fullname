@@ -1,51 +1,52 @@
 {
-  "name": "fullname",
-  "version": "3.3.0",
-  "description": "Get the fullname of the current user",
-  "license": "MIT",
-  "repository": "sindresorhus/fullname",
-  "author": {
-    "name": "Sindre Sorhus",
-    "email": "sindresorhus@gmail.com",
-    "url": "sindresorhus.com"
-  },
-  "engines": {
-    "node": ">=4"
-  },
-  "scripts": {
-    "test": "xo && ava"
-  },
-  "files": [
-    "index.js"
-  ],
-  "keywords": [
-    "name",
-    "fullname",
-    "realname",
-    "full name",
-    "first name",
-    "surname",
-    "full",
-    "real",
-    "given",
-    "user",
-    "gecos",
-    "pwuid",
-    "uid"
-  ],
-  "dependencies": {
-    "execa": "^0.6.0",
-    "filter-obj": "^1.1.0",
-    "mem": "^1.1.0",
-    "p-any": "^1.0.0",
-    "p-try": "^1.0.0",
-    "passwd-user": "^2.1.0",
-    "rc": "^1.1.6"
-  },
-  "devDependencies": {
-    "ava": "*",
-    "import-fresh": "^2.0.0",
-    "mock-require": "^2.0.0",
-    "xo": "*"
-  }
+	"name": "fullname",
+	"version": "3.3.0",
+	"description": "Get the fullname of the current user",
+	"license": "MIT",
+	"repository": "sindresorhus/fullname",
+	"author": {
+		"name": "Sindre Sorhus",
+		"email": "sindresorhus@gmail.com",
+		"url": "sindresorhus.com"
+	},
+	"engines": {
+		"node": ">=8"
+	},
+	"scripts": {
+		"test": "xo && ava && tsd"
+	},
+	"files": [
+		"index.js",
+		"index.d.ts"
+	],
+	"keywords": [
+		"name",
+		"fullname",
+		"realname",
+		"full name",
+		"first name",
+		"surname",
+		"full",
+		"real",
+		"given",
+		"user",
+		"gecos",
+		"pwuid",
+		"uid"
+	],
+	"dependencies": {
+		"execa": "^1.0.0",
+		"filter-obj": "^2.0.0",
+		"mem": "^4.3.0",
+		"p-any": "^2.1.0",
+		"passwd-user": "^2.1.0",
+		"rc": "^1.1.6"
+	},
+	"devDependencies": {
+		"ava": "^1.4.1",
+		"import-fresh": "^3.0.0",
+		"mock-require": "^3.0.3",
+		"tsd": "^0.7.2",
+		"xo": "^0.24.0"
+	}
 }
