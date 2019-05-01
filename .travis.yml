@@ -1,7 +1,5 @@
-sudo: false
 language: node_js
 node_js:
-  - '6'
-  - '4'
-before_script:
-  - git config --global user.name 'Unicorn Cake'
+  - '12'
+  - '10'
+  - '8'

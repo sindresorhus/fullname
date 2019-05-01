@@ -6,7 +6,7 @@ import importFresh from 'import-fresh';
 let originalEnv;
 let originalPlatform;
 test.before(() => {
-	originalEnv = Object.assign({}, process.env);
+	originalEnv = {...process.env};
 	originalPlatform = Object.getOwnPropertyDescriptor(process, 'platform');
 });
 
@@ -21,35 +21,35 @@ test.beforeEach(() => {
 });
 
 test.after(() => {
-	process.env = Object.assign({}, originalEnv);
+	process.env = {...originalEnv};
 	Object.defineProperty(process, 'platform', originalPlatform);
 });
 
 test('should get fullname from env var', async t => {
-	const m = importFresh('.');
-	mem.clear(m);
+	const fullName = importFresh('.');
+	mem.clear(fullName);
 
 	process.env.GIT_AUTHOR_NAME = 'TEST-ENV-FULL-NAME';
-	const fullname = await m();
+	const result = await fullName();
 
-	t.is(typeof fullname, 'string');
-	t.is(fullname, 'TEST-ENV-FULL-NAME');
+	t.is(typeof result, 'string');
+	t.is(result, 'TEST-ENV-FULL-NAME');
 });
 
 test('respects changed env vars', async t => {
-	const m = importFresh('.');
-	mem.clear(m);
+	const fullName = importFresh('.');
+	mem.clear(fullName);
 
 	process.env.GIT_AUTHOR_NAME = 'NAME-1';
-	const fullname1 = await m();
+	const result1 = await fullName();
 	process.env.GIT_AUTHOR_NAME = 'NAME-2';
-	const fullname2 = await m();
+	const result2 = await fullName();
 
-	t.is(typeof fullname1, 'string');
-	t.is(fullname1, 'NAME-1');
-	t.is(typeof fullname2, 'string');
-	t.is(fullname2, 'NAME-2');
-	t.not(fullname1, fullname2);
+	t.is(typeof result1, 'string');
+	t.is(result1, 'NAME-1');
+	t.is(typeof result2, 'string');
+	t.is(result2, 'NAME-2');
+	t.not(result1, result2);
 });
 
 test('should get value from init-author-name', async t => {
@@ -57,12 +57,12 @@ test('should get value from init-author-name', async t => {
 		'init-author-name': 'TEST-INIT-AUTHOR-FULL-NAME'
 	}));
 
-	const m = importFresh('.');
-	mem.clear(m);
+	const fullName = importFresh('.');
+	mem.clear(fullName);
 
-	const fullname = await m();
-	t.is(typeof fullname, 'string');
-	t.is(fullname, 'TEST-INIT-AUTHOR-FULL-NAME');
+	const result = await fullName();
+	t.is(typeof result, 'string');
+	t.is(result, 'TEST-INIT-AUTHOR-FULL-NAME');
 });
 
 test('should get value from passwdUser for darwin platform', async t => {
@@ -72,15 +72,15 @@ test('should get value from passwdUser for darwin platform', async t => {
 	});
 
 	mock('passwd-user', () => Promise.resolve({
-		fullname: 'TEST-PASSWD-FULL-NAME'
+		fullName: 'TEST-PASSWD-FULL-NAME'
 	}));
 
-	const m = importFresh('.');
-	mem.clear(m);
+	const fullName = importFresh('.');
+	mem.clear(fullName);
 
-	const fullname = await m();
-	t.is(typeof fullname, 'string');
-	t.is(fullname, 'TEST-PASSWD-FULL-NAME');
+	const result = await fullName();
+	t.is(typeof result, 'string');
+	t.is(result, 'TEST-PASSWD-FULL-NAME');
 });
 
 test('should get value from osascript for darwin platform if passwdUser returns empty username', async t => {
@@ -95,12 +95,12 @@ test('should get value from osascript for darwin platform if passwdUser returns 
 
 	mock('passwd-user', () => Promise.resolve());
 
-	const m = importFresh('.');
-	mem.clear(m);
+	const fullName = importFresh('.');
+	mem.clear(fullName);
 
-	const fullname = await m();
-	t.is(typeof fullname, 'string');
-	t.is(fullname, 'TEST-OSASCRIPT-FULL-NAME');
+	const result = await fullName();
+	t.is(typeof result, 'string');
+	t.is(result, 'TEST-OSASCRIPT-FULL-NAME');
 });
 
 test('should get value from osascript for darwin platform if passwdUser rejects', async t => {
@@ -115,12 +115,12 @@ test('should get value from osascript for darwin platform if passwdUser rejects'
 
 	mock('passwd-user', () => Promise.reject());
 
-	const m = importFresh('.');
-	mem.clear(m);
+	const fullName = importFresh('.');
+	mem.clear(fullName);
 
-	const fullname = await m();
-	t.is(typeof fullname, 'string');
-	t.is(fullname, 'TEST-OSASCRIPT-FULL-NAME');
+	const result = await fullName();
+	t.is(typeof result, 'string');
+	t.is(result, 'TEST-OSASCRIPT-FULL-NAME');
 });
 
 test('should get value from git global user for win32 platform', async t => {
@@ -141,12 +141,12 @@ test('should get value from git global user for win32 platform', async t => {
 
 	mock('passwd-user', () => Promise.reject());
 
-	const m = importFresh('.');
-	mem.clear(m);
+	const fullName = importFresh('.');
+	mem.clear(fullName);
 
-	const fullname = await m();
-	t.is(typeof fullname, 'string');
-	t.is(fullname, 'TEST-GIT-GLOBAL-FULL-NAME');
+	const result = await fullName();
+	t.is(typeof result, 'string');
+	t.is(result, 'TEST-GIT-GLOBAL-FULL-NAME');
 });
 
 test('should get value from wmic for win32 platform if git global returns empty username', async t => {
@@ -165,12 +165,12 @@ test('should get value from wmic for win32 platform if git global returns empty 
 		value: 'win32'
 	});
 
-	const m = importFresh('.');
-	mem.clear(m);
+	const fullName = importFresh('.');
+	mem.clear(fullName);
 
-	const fullname = await m();
-	t.is(typeof fullname, 'string');
-	t.is(fullname, 'TEST-WMIC-FULL-NAME');
+	const result = await fullName();
+	t.is(typeof result, 'string');
+	t.is(result, 'TEST-WMIC-FULL-NAME');
 });
 
 test('should get value from wmic for win32 platform if git global rejects', async t => {
@@ -189,17 +189,17 @@ test('should get value from wmic for win32 platform if git global rejects', asyn
 		value: 'win32'
 	});
 
-	const m = importFresh('.');
-	mem.clear(m);
+	const fullName = importFresh('.');
+	mem.clear(fullName);
 
-	const fullname = await m();
-	t.is(typeof fullname, 'string');
-	t.is(fullname, 'TEST-WMIC-FULL-NAME');
+	const result = await fullName();
+	t.is(typeof result, 'string');
+	t.is(result, 'TEST-WMIC-FULL-NAME');
 });
 
 test('should get value from passwdUser for other platform and both other checks fail', async t => {
 	mock('passwd-user', () => Promise.resolve({
-		fullname: 'TEST-PASSWD-FULL-NAME'
+		fullName: 'TEST-PASSWD-FULL-NAME'
 	}));
 
 	mock('execa', {
@@ -213,12 +213,12 @@ test('should get value from passwdUser for other platform and both other checks 
 		value: 'other'
 	});
 
-	const m = importFresh('.');
-	mem.clear(m);
+	const fullName = importFresh('.');
+	mem.clear(fullName);
 
-	const fullname = await m();
-	t.is(typeof fullname, 'string');
-	t.is(fullname, 'TEST-PASSWD-FULL-NAME');
+	const result = await fullName();
+	t.is(typeof result, 'string');
+	t.is(result, 'TEST-PASSWD-FULL-NAME');
 });
 
 test('should get value from getent for other platform and both other checks fail', async t => {
@@ -237,12 +237,12 @@ test('should get value from getent for other platform and both other checks fail
 		value: 'other'
 	});
 
-	const m = importFresh('.');
-	mem.clear(m);
+	const fullName = importFresh('.');
+	mem.clear(fullName);
 
-	const fullname = await m();
-	t.is(typeof fullname, 'string');
-	t.is(fullname, 'TEST-GETENT-FULL-NAME');
+	const result = await fullName();
+	t.is(typeof result, 'string');
+	t.is(result, 'TEST-GETENT-FULL-NAME');
 });
 
 test('should get value from git for other platform and both other checks fail', async t => {
@@ -259,17 +259,17 @@ test('should get value from git for other platform and both other checks fail', 
 		value: 'other'
 	});
 
-	const m = importFresh('.');
-	mem.clear(m);
+	const fullName = importFresh('.');
+	mem.clear(fullName);
 
-	const fullname = await m();
-	t.is(typeof fullname, 'string');
-	t.is(fullname, 'TEST-GIT-FULL-NAME');
+	const result = await fullName();
+	t.is(typeof result, 'string');
+	t.is(result, 'TEST-GIT-FULL-NAME');
 });
 
 test('should get value from passwdUser for other platform and both other checks return empty string', async t => {
 	mock('passwd-user', () => Promise.resolve({
-		fullname: 'TEST-PASSWD-FULL-NAME'
+		fullName: 'TEST-PASSWD-FULL-NAME'
 	}));
 
 	mock('execa', {
@@ -284,12 +284,12 @@ test('should get value from passwdUser for other platform and both other checks 
 		value: 'other'
 	});
 
-	const m = importFresh('.');
-	mem.clear(m);
+	const fullName = importFresh('.');
+	mem.clear(fullName);
 
-	const fullname = await m();
-	t.is(typeof fullname, 'string');
-	t.is(fullname, 'TEST-PASSWD-FULL-NAME');
+	const result = await fullName();
+	t.is(typeof result, 'string');
+	t.is(result, 'TEST-PASSWD-FULL-NAME');
 });
 
 test('should get value from getent for other platform and both other checks return empty string', async t => {
@@ -308,12 +308,12 @@ test('should get value from getent for other platform and both other checks retu
 		value: 'other'
 	});
 
-	const m = importFresh('.');
-	mem.clear(m);
+	const fullName = importFresh('.');
+	mem.clear(fullName);
 
-	const fullname = await m();
-	t.is(typeof fullname, 'string');
-	t.is(fullname, 'TEST-GETENT-FULL-NAME');
+	const result = await fullName();
+	t.is(typeof result, 'string');
+	t.is(result, 'TEST-GETENT-FULL-NAME');
 });
 
 test('should get value from git for other platform and both other checks return empty string', async t => {
@@ -331,10 +331,10 @@ test('should get value from git for other platform and both other checks return 
 		value: 'other'
 	});
 
-	const m = importFresh('.');
-	mem.clear(m);
+	const fullName = importFresh('.');
+	mem.clear(fullName);
 
-	const fullname = await m();
-	t.is(typeof fullname, 'string');
-	t.is(fullname, 'TEST-GIT-FULL-NAME');
+	const result = await fullName();
+	t.is(typeof result, 'string');
+	t.is(result, 'TEST-GIT-FULL-NAME');
 });

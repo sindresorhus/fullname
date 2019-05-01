@@ -3,64 +3,106 @@ const mem = require('mem');
 const execa = require('execa');
 const passwdUser = require('passwd-user');
 const pAny = require('p-any');
-const pTry = require('p-try');
 const filterObj = require('filter-obj');
 
-const envVars = [
+const envVariables = [
 	'GIT_AUTHOR_NAME',
 	'GIT_COMMITTER_NAME',
 	'HGUSER', // Mercurial
 	'C9_USER' // Cloud9
 ];
 
-function checkEnv() {
-	return pTry(() => {
-		const env = process.env;
-		const varName = envVars.find(x => env[x]);
-		const fullname = varName && env[varName];
+/* eslint-disable unicorn/error-message */
+async function checkEnv() {
+	const {env} = process;
+	const variableName = envVariables.find(variable => env[variable]);
+	const fullName = variableName && env[variableName];
 
-		return fullname || Promise.reject();
-	});
+	if (!fullName) {
+		throw new Error();
+	}
+
+	return fullName;
 }
 
-function checkAuthorName() {
-	return pTry(() => {
-		const fullname = require('rc')('npm')['init-author-name'];
-		return fullname || Promise.reject();
-	});
+async function checkAuthorName() {
+	const fullName = require('rc')('npm')['init-author-name'];
+
+	if (!fullName) {
+		throw new Error();
+	}
+
+	return fullName;
 }
 
-function checkPasswd() {
-	return passwdUser()
-		.then(user => user.fullname || Promise.reject());
+async function checkPasswd() {
+	const user = await passwdUser();
+
+	if (!user.fullName) {
+		throw new Error();
+	}
+
+	return user.fullName;
 }
 
-function checkGit() {
-	return execa.stdout('git', ['config', '--global', 'user.name'])
-		.then(fullname => fullname || Promise.reject());
+async function checkGit() {
+	const fullName = await execa.stdout('git', [
+		'config',
+		'--global',
+		'user.name'
+	]);
+
+	if (!fullName) {
+		throw new Error();
+	}
+
+	return fullName;
 }
 
-function checkOsaScript() {
-	return execa.stdout('osascript', ['-e', 'long user name of (system info)'])
-		.then(fullname => fullname || Promise.reject());
+async function checkOsaScript() {
+	const fullName = await execa.stdout('osascript', [
+		'-e',
+		'long user name of (system info)'
+	]);
+
+	if (!fullName) {
+		throw new Error();
+	}
+
+	return fullName;
 }
 
-function checkWmic() {
-	return execa.stdout('wmic', ['useraccount', 'where', 'name="%username%"', 'get', 'fullname'])
-		.then(stdout => {
-			const fullname = stdout.replace('FullName', '');
-			return fullname || Promise.reject();
-		});
+async function checkWmic() {
+	const stdout = await execa.stdout('wmic', [
+		'useraccount',
+		'where',
+		'name="%username%"',
+		'get',
+		'fullname'
+	]);
+
+	const fullName = stdout.replace('FullName', '');
+
+	if (!fullName) {
+		throw new Error();
+	}
+
+	return fullName;
 }
 
-function checkGetEnt() {
-	return execa.shell('getent passwd $(whoami)').then(res => {
-		const fullname = (res.stdout.split(':')[4] || '').replace(/,.*/, '');
-		return fullname || Promise.reject();
-	});
-}
+async function checkGetEnt() {
+	const result = await execa.shell('getent passwd $(whoami)');
+	const fullName = (result.stdout.split(':')[4] || '').replace(/,.*/, '');
 
-function fallback() {
+	if (!fullName) {
+		throw new Error();
+	}
+
+	return fullName;
+}
+/* eslint-enable unicorn/error-message */
+
+async function fallback() {
 	if (process.platform === 'darwin') {
 		return pAny([checkPasswd(), checkOsaScript()]);
 	}
@@ -73,15 +115,22 @@ function fallback() {
 	return pAny([checkPasswd(), checkGetEnt(), checkGit()]);
 }
 
-function getFullName() {
-	return checkEnv()
-		.catch(checkAuthorName)
-		.catch(fallback)
-		.catch(() => {});
+async function getFullName() {
+	try {
+		return await checkEnv();
+	} catch (_) {}
+
+	try {
+		return await checkAuthorName();
+	} catch (_) {}
+
+	try {
+		return await fallback();
+	} catch (_) {}
 }
 
 module.exports = mem(getFullName, {
 	cacheKey() {
-		return JSON.stringify(filterObj(process.env, envVars));
+		return JSON.stringify(filterObj(process.env, envVariables));
 	}
 });
