@@ -3,5 +3,3 @@ node_js:
   - '12'
   - '10'
   - '8'
-before_script:
-  - git config --global user.name 'Unicorn Cake'
