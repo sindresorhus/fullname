@@ -5,7 +5,7 @@ const passwdUser = require('passwd-user');
 const pAny = require('p-any');
 const filterObj = require('filter-obj');
 
-const envVariables = [
+const environmentVariables = [
 	'GIT_AUTHOR_NAME',
 	'GIT_COMMITTER_NAME',
 	'HGUSER', // Mercurial
@@ -15,7 +15,7 @@ const envVariables = [
 /* eslint-disable unicorn/error-message */
 async function checkEnv() {
 	const {env} = process;
-	const variableName = envVariables.find(variable => env[variable]);
+	const variableName = environmentVariables.find(variable => env[variable]);
 	const fullName = variableName && env[variableName];
 
 	if (!fullName) {
@@ -108,7 +108,7 @@ async function fallback() {
 	}
 
 	if (process.platform === 'win32') {
-		// Fullname is usually not set by default in the system on Windows 7+
+		// The full name is usually not set by default in the system on Windows 7+
 		return pAny([checkGit(), checkWmic()]);
 	}
 
@@ -131,6 +131,6 @@ async function getFullName() {
 
 module.exports = mem(getFullName, {
 	cacheKey() {
-		return JSON.stringify(filterObj(process.env, envVariables));
+		return JSON.stringify(filterObj(process.env, environmentVariables));
 	}
 });
