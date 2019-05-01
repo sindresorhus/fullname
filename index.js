@@ -18,31 +18,31 @@ async function checkEnv() {
 	const variableName = envVariables.find(variable => env[variable]);
 	const fullName = variableName && env[variableName];
 
-	if (fullName) {
-		return fullName;
+	if (!fullName) {
+		throw new Error();
 	}
 
-	throw new Error();
+	return fullName;
 }
 
 async function checkAuthorName() {
 	const fullName = require('rc')('npm')['init-author-name'];
 
-	if (fullName) {
-		return fullName;
+	if (!fullName) {
+		throw new Error();
 	}
 
-	throw new Error();
+	return fullName;
 }
 
 async function checkPasswd() {
 	const user = await passwdUser();
 
-	if (user.fullname) {
-		return user.fullname;
+	if (!user.fullName) {
+		throw new Error();
 	}
 
-	throw new Error();
+	return user.fullName;
 }
 
 async function checkGit() {
@@ -52,11 +52,11 @@ async function checkGit() {
 		'user.name'
 	]);
 
-	if (fullName) {
-		return fullName;
+	if (!fullName) {
+		throw new Error();
 	}
 
-	throw new Error();
+	return fullName;
 }
 
 async function checkOsaScript() {
@@ -65,11 +65,11 @@ async function checkOsaScript() {
 		'long user name of (system info)'
 	]);
 
-	if (fullName) {
-		return fullName;
+	if (!fullName) {
+		throw new Error();
 	}
 
-	throw new Error();
+	return fullName;
 }
 
 async function checkWmic() {
@@ -83,22 +83,22 @@ async function checkWmic() {
 
 	const fullName = stdout.replace('FullName', '');
 
-	if (fullName) {
-		return fullName;
+	if (!fullName) {
+		throw new Error();
 	}
 
-	throw new Error();
+	return fullName;
 }
 
 async function checkGetEnt() {
 	const result = await execa.shell('getent passwd $(whoami)');
 	const fullName = (result.stdout.split(':')[4] || '').replace(/,.*/, '');
 
-	if (fullName) {
-		return fullName;
+	if (!fullName) {
+		throw new Error();
 	}
 
-	throw new Error();
+	return fullName;
 }
 /* eslint-enable unicorn/error-message */
 

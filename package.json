@@ -39,8 +39,8 @@
 		"filter-obj": "^2.0.0",
 		"mem": "^4.3.0",
 		"p-any": "^2.1.0",
-		"passwd-user": "^2.1.0",
-		"rc": "^1.1.6"
+		"passwd-user": "^3.0.0",
+		"rc": "^1.2.8"
 	},
 	"devDependencies": {
 		"ava": "^1.4.1",

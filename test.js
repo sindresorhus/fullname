@@ -72,7 +72,7 @@ test('should get value from passwdUser for darwin platform', async t => {
 	});
 
 	mock('passwd-user', () => Promise.resolve({
-		fullname: 'TEST-PASSWD-FULL-NAME'
+		fullName: 'TEST-PASSWD-FULL-NAME'
 	}));
 
 	const fullName = importFresh('.');
@@ -199,7 +199,7 @@ test('should get value from wmic for win32 platform if git global rejects', asyn
 
 test('should get value from passwdUser for other platform and both other checks fail', async t => {
 	mock('passwd-user', () => Promise.resolve({
-		fullname: 'TEST-PASSWD-FULL-NAME'
+		fullName: 'TEST-PASSWD-FULL-NAME'
 	}));
 
 	mock('execa', {
@@ -269,7 +269,7 @@ test('should get value from git for other platform and both other checks fail', 
 
 test('should get value from passwdUser for other platform and both other checks return empty string', async t => {
 	mock('passwd-user', () => Promise.resolve({
-		fullname: 'TEST-PASSWD-FULL-NAME'
+		fullName: 'TEST-PASSWD-FULL-NAME'
 	}));
 
 	mock('execa', {
@@ -287,9 +287,9 @@ test('should get value from passwdUser for other platform and both other checks 
 	const fullName = importFresh('.');
 	mem.clear(fullName);
 
-	const fullname = await fullName();
-	t.is(typeof fullname, 'string');
-	t.is(fullname, 'TEST-PASSWD-FULL-NAME');
+	const result = await fullName();
+	t.is(typeof result, 'string');
+	t.is(result, 'TEST-PASSWD-FULL-NAME');
 });
 
 test('should get value from getent for other platform and both other checks return empty string', async t => {
@@ -311,9 +311,9 @@ test('should get value from getent for other platform and both other checks retu
 	const fullName = importFresh('.');
 	mem.clear(fullName);
 
-	const fullname = await fullName();
-	t.is(typeof fullname, 'string');
-	t.is(fullname, 'TEST-GETENT-FULL-NAME');
+	const result = await fullName();
+	t.is(typeof result, 'string');
+	t.is(result, 'TEST-GETENT-FULL-NAME');
 });
 
 test('should get value from git for other platform and both other checks return empty string', async t => {
@@ -334,7 +334,7 @@ test('should get value from git for other platform and both other checks return 
 	const fullName = importFresh('.');
 	mem.clear(fullName);
 
-	const fullname = await fullName();
-	t.is(typeof fullname, 'string');
-	t.is(fullname, 'TEST-GIT-FULL-NAME');
+	const result = await fullName();
+	t.is(typeof result, 'string');
+	t.is(result, 'TEST-GIT-FULL-NAME');
 });
