@@ -130,6 +130,7 @@ async function getFullName() {
 }
 
 module.exports = mem(getFullName, {
+	cachePromiseRejection: false,
 	cacheKey() {
 		return JSON.stringify(filterObj(process.env, environmentVariables));
 	}

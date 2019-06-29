@@ -36,16 +36,16 @@
 	"dependencies": {
 		"execa": "^1.0.0",
 		"filter-obj": "^2.0.0",
-		"mem": "^4.3.0",
+		"mem": "^5.1.0",
 		"p-any": "^2.1.0",
 		"passwd-user": "^3.0.0",
 		"rc": "^1.2.8"
 	},
 	"devDependencies": {
-		"ava": "^1.4.1",
+		"ava": "^2.1.0",
 		"import-fresh": "^3.0.0",
 		"mock-require": "^3.0.3",
-		"tsd": "^0.7.2",
+		"tsd": "^0.7.3",
 		"xo": "^0.24.0"
 	}
 }
