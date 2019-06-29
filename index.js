@@ -76,12 +76,12 @@ async function checkWmic() {
 	const stdout = await execa.stdout('wmic', [
 		'useraccount',
 		'where',
-		'name="%username%"',
+		`name="${process.env.USERNAME}"`,
 		'get',
 		'fullname'
 	]);
 
-	const fullName = stdout.replace('FullName', '');
+	const fullName = stdout.replace('FullName', '').trim();
 
 	if (!fullName) {
 		throw new Error();
