@@ -1,4 +1,4 @@
-# fullname [![Build Status](https://travis-ci.org/sindresorhus/fullname.svg?branch=master)](https://travis-ci.org/sindresorhus/fullname)
+# fullname
 
 > Get the full name of the current user
 
