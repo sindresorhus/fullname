@@ -9,7 +9,11 @@ const environmentVariables = [
 	'GIT_AUTHOR_NAME',
 	'GIT_COMMITTER_NAME',
 	'HGUSER', // Mercurial
-	'C9_USER' // Cloud9
+	'C9_USER', // Cloud9
+	//https://www.unix.com/shell-programming-and-scripting/152400-unix-user-logname-environment-variables.html (about $USER and $LOGNAME)
+	//Both is same but include both for precaution if some linux just only set one of these enviroment variable
+	'LOGNAME', //Original System V Unix
+	'USER' //Introduced in BSD
 ];
 
 /* eslint-disable unicorn/error-message */
