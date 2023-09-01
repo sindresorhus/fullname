@@ -1,13 +1,21 @@
-import {serial as test} from 'ava';
+import process from 'node:process';
+import test from 'ava';
 import mem from 'mem';
 import mock from 'mock-require';
 import importFresh from 'import-fresh';
+
+// TODO: Fix tests.
 
 let originalEnv;
 let originalPlatform;
 test.before(() => {
 	originalEnv = {...process.env};
 	originalPlatform = Object.getOwnPropertyDescriptor(process, 'platform');
+});
+
+test.after(() => {
+	process.env = {...originalEnv};
+	Object.defineProperty(process, 'platform', originalPlatform);
 });
 
 test.beforeEach(() => {
@@ -18,11 +26,6 @@ test.beforeEach(() => {
 
 	Object.defineProperty(process, 'platform', originalPlatform);
 	mock('rc', () => ({}));
-});
-
-test.after(() => {
-	process.env = {...originalEnv};
-	Object.defineProperty(process, 'platform', originalPlatform);
 });
 
 test('should get fullname from env var', async t => {
@@ -54,7 +57,7 @@ test('respects changed env vars', async t => {
 
 test('should get value from init-author-name', async t => {
 	mock('rc', () => ({
-		'init-author-name': 'TEST-INIT-AUTHOR-FULL-NAME'
+		'init-author-name': 'TEST-INIT-AUTHOR-FULL-NAME',
 	}));
 
 	const fullName = importFresh('.');
@@ -68,11 +71,11 @@ test('should get value from init-author-name', async t => {
 test('should get value from passwdUser for darwin platform', async t => {
 	// Redefine process.platform
 	Object.defineProperty(process, 'platform', {
-		value: 'darwin'
+		value: 'darwin',
 	});
 
 	mock('passwd-user', () => Promise.resolve({
-		fullName: 'TEST-PASSWD-FULL-NAME'
+		fullName: 'TEST-PASSWD-FULL-NAME',
 	}));
 
 	const fullName = importFresh('.');
@@ -86,11 +89,11 @@ test('should get value from passwdUser for darwin platform', async t => {
 test('should get value from osascript for darwin platform if passwdUser returns empty username', async t => {
 	// Redefine process.platform
 	Object.defineProperty(process, 'platform', {
-		value: 'darwin'
+		value: 'darwin',
 	});
 
 	mock('execa', {
-		stdout: () => Promise.resolve('TEST-OSASCRIPT-FULL-NAME')
+		stdout: () => Promise.resolve('TEST-OSASCRIPT-FULL-NAME'),
 	});
 
 	mock('passwd-user', () => Promise.resolve());
@@ -106,11 +109,11 @@ test('should get value from osascript for darwin platform if passwdUser returns 
 test('should get value from osascript for darwin platform if passwdUser rejects', async t => {
 	// Redefine process.platform
 	Object.defineProperty(process, 'platform', {
-		value: 'darwin'
+		value: 'darwin',
 	});
 
 	mock('execa', {
-		stdout: () => Promise.resolve('TEST-OSASCRIPT-FULL-NAME')
+		stdout: () => Promise.resolve('TEST-OSASCRIPT-FULL-NAME'),
 	});
 
 	mock('passwd-user', () => Promise.reject());
@@ -126,17 +129,17 @@ test('should get value from osascript for darwin platform if passwdUser rejects'
 test('should get value from git global user for win32 platform', async t => {
 	// Redefine process.platform
 	Object.defineProperty(process, 'platform', {
-		value: 'win32'
+		value: 'win32',
 	});
 
 	mock('execa', {
-		stdout: first => {
+		stdout(first) {
 			if (first === 'git') {
 				return Promise.resolve('TEST-GIT-GLOBAL-FULL-NAME');
 			}
 
 			return Promise.resolve('');
-		}
+		},
 	});
 
 	mock('passwd-user', () => Promise.reject());
@@ -151,18 +154,18 @@ test('should get value from git global user for win32 platform', async t => {
 
 test('should get value from wmic for win32 platform if git global returns empty username', async t => {
 	mock('execa', {
-		stdout: first => {
+		stdout(first) {
 			if (first === 'wmic') {
 				return Promise.resolve('TEST-WMIC-FULL-NAME');
 			}
 
 			return Promise.resolve('');
-		}
+		},
 	});
 
 	// Redefine process.platform
 	Object.defineProperty(process, 'platform', {
-		value: 'win32'
+		value: 'win32',
 	});
 
 	const fullName = importFresh('.');
@@ -175,18 +178,18 @@ test('should get value from wmic for win32 platform if git global returns empty 
 
 test('should get value from wmic for win32 platform if git global rejects', async t => {
 	mock('execa', {
-		stdout: first => {
+		stdout(first) {
 			if (first === 'wmic') {
 				return Promise.resolve('TEST-WMIC-FULL-NAME');
 			}
 
 			return Promise.reject(new Error('FAILED'));
-		}
+		},
 	});
 
 	// Redefine process.platform
 	Object.defineProperty(process, 'platform', {
-		value: 'win32'
+		value: 'win32',
 	});
 
 	const fullName = importFresh('.');
@@ -199,18 +202,18 @@ test('should get value from wmic for win32 platform if git global rejects', asyn
 
 test('should get value from passwdUser for other platform and both other checks fail', async t => {
 	mock('passwd-user', () => Promise.resolve({
-		fullName: 'TEST-PASSWD-FULL-NAME'
+		fullName: 'TEST-PASSWD-FULL-NAME',
 	}));
 
 	mock('execa', {
 		stdout: () => Promise.reject(new Error('FAILED')),
 		// Getent result
-		shell: () => Promise.reject(new Error('FAILED'))
+		shell: () => Promise.reject(new Error('FAILED')),
 	});
 
 	// Redefine process.platform
 	Object.defineProperty(process, 'platform', {
-		value: 'other'
+		value: 'other',
 	});
 
 	const fullName = importFresh('.');
@@ -226,15 +229,15 @@ test('should get value from getent for other platform and both other checks fail
 		stdout: () => Promise.reject(new Error('FAILED')),
 		// Getent result
 		shell: () => Promise.resolve({
-			stdout: '1:2:3:4:TEST-GETENT-FULL-NAME'
-		})
+			stdout: '1:2:3:4:TEST-GETENT-FULL-NAME',
+		}),
 	});
 
 	mock('passwd-user', () => Promise.reject(new Error('FAILED')));
 
 	// Redefine process.platform
 	Object.defineProperty(process, 'platform', {
-		value: 'other'
+		value: 'other',
 	});
 
 	const fullName = importFresh('.');
@@ -249,14 +252,14 @@ test('should get value from git for other platform and both other checks fail', 
 	mock('execa', {
 		stdout: () => Promise.resolve('TEST-GIT-FULL-NAME'),
 		// Getent result
-		shell: () => Promise.reject(new Error('FAILED'))
+		shell: () => Promise.reject(new Error('FAILED')),
 	});
 
 	mock('passwd-user', () => Promise.reject(new Error('FAILED')));
 
 	// Redefine process.platform
 	Object.defineProperty(process, 'platform', {
-		value: 'other'
+		value: 'other',
 	});
 
 	const fullName = importFresh('.');
@@ -269,19 +272,19 @@ test('should get value from git for other platform and both other checks fail', 
 
 test('should get value from passwdUser for other platform and both other checks return empty string', async t => {
 	mock('passwd-user', () => Promise.resolve({
-		fullName: 'TEST-PASSWD-FULL-NAME'
+		fullName: 'TEST-PASSWD-FULL-NAME',
 	}));
 
 	mock('execa', {
 		// CheckGit result
 		stdout: () => Promise.resolve(''),
 		// Getent result
-		shell: () => Promise.resolve('')
+		shell: () => Promise.resolve(''),
 	});
 
 	// Redefine process.platform
 	Object.defineProperty(process, 'platform', {
-		value: 'other'
+		value: 'other',
 	});
 
 	const fullName = importFresh('.');
@@ -298,14 +301,14 @@ test('should get value from getent for other platform and both other checks retu
 		stdout: () => Promise.resolve(''),
 		// Getent result
 		shell: () => Promise.resolve({
-			stdout: '1:2:3:4:TEST-GETENT-FULL-NAME'
-		})
+			stdout: '1:2:3:4:TEST-GETENT-FULL-NAME',
+		}),
 	});
 	mock('passwd-user', () => Promise.resolve(''));
 
 	// Redefine process.platform
 	Object.defineProperty(process, 'platform', {
-		value: 'other'
+		value: 'other',
 	});
 
 	const fullName = importFresh('.');
@@ -321,14 +324,14 @@ test('should get value from git for other platform and both other checks return 
 		// CheckGit result
 		stdout: () => Promise.resolve('TEST-GIT-FULL-NAME'),
 		// Getent result
-		shell: () => Promise.resolve('')
+		shell: () => Promise.resolve(''),
 	});
 
 	mock('passwd-user', () => Promise.resolve(''));
 
 	// Redefine process.platform
 	Object.defineProperty(process, 'platform', {
-		value: 'other'
+		value: 'other',
 	});
 
 	const fullName = importFresh('.');

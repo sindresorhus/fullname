@@ -3,14 +3,10 @@ Get the full name of the current user.
 
 @example
 ```
-import fullName = require('fullname');
+import fullName from 'fullname';
 
-(async () => {
-	console.log(await fullName());
-	//=> 'Sindre Sorhus'
-})();
+console.log(await fullName());
+//=> 'Sindre Sorhus'
 ```
 */
-declare function fullName(): Promise<string | undefined>;
-
-export = fullName;
+export default function fullName(): Promise<string | undefined>;

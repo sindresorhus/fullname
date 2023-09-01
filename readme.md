@@ -2,37 +2,27 @@
 
 > Get the full name of the current user
 
+Works on macOS, Linux, and Windows.
 
 ## Install
 
+```sh
+npm install fullname
 ```
-$ npm install fullname
-```
-
-Tested on macOS, Linux, and Windows.
-
 
 ## Usage
 
 ```js
-const fullName = require('fullname');
+import fullName from 'fullname';
 
-(async () => {
-	console.log(await fullName());
-	//=> 'Sindre Sorhus'
-})();
+console.log(await fullName());
+//=> 'Sindre Sorhus'
 ```
 
-In the rare case a name can't be found, you could fall back to [`username`](https://github.com/sindresorhus/username).
-
+In the rare case a name cannot be found, you could fall back to [`username`](https://github.com/sindresorhus/username).
 
 ## Related
 
-- [fullname-cli](https://github.com/sindresorhus/fullname-cli) - CLI for this module
-- [fullname-native](https://github.com/sindresorhus/fullname-native) - Native version of this module
+- [fullname-cli](https://github.com/sindresorhus/fullname-cli) - CLI for this package
+- [fullname-native](https://github.com/sindresorhus/fullname-native) - Native version of this package
 - [username](https://github.com/sindresorhus/username) - Get the username of the current user
-
-
-## License
-
-MIT © [Sindre Sorhus](https://sindresorhus.com)

@@ -4,16 +4,23 @@
 	"description": "Get the fullname of the current user",
 	"license": "MIT",
 	"repository": "sindresorhus/fullname",
+	"funding": "https://github.com/sponsors/sindresorhus",
 	"author": {
 		"name": "Sindre Sorhus",
 		"email": "sindresorhus@gmail.com",
-		"url": "sindresorhus.com"
+		"url": "https://sindresorhus.com"
+	},
+	"type": "module",
+	"exports": {
+		"types": "./index.d.ts",
+		"default": "./index.js"
 	},
 	"engines": {
-		"node": ">=8"
+		"node": ">=18"
 	},
 	"scripts": {
-		"test": "xo && ava && tsd"
+		"//test": "xo && ava && tsd",
+		"test": "xo && tsd"
 	},
 	"files": [
 		"index.js",
@@ -34,18 +41,21 @@
 		"uid"
 	],
 	"dependencies": {
-		"execa": "^1.0.0",
-		"filter-obj": "^2.0.0",
+		"execa": "^8.0.1",
+		"filter-obj": "^5.1.0",
 		"mem": "^5.1.0",
-		"p-any": "^2.1.0",
-		"passwd-user": "^3.0.0",
+		"p-any": "^4.0.0",
+		"passwd-user": "^4.0.0",
 		"rc": "^1.2.8"
 	},
 	"devDependencies": {
-		"ava": "^2.1.0",
+		"ava": "^5.3.1",
 		"import-fresh": "^3.0.0",
 		"mock-require": "^3.0.3",
-		"tsd": "^0.7.3",
-		"xo": "^0.24.0"
+		"tsd": "^0.29.0",
+		"xo": "^0.56.0"
+	},
+	"ava": {
+		"serial": true
 	}
 }

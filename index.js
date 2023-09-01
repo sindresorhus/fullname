@@ -1,15 +1,16 @@
-'use strict';
-const mem = require('mem');
-const execa = require('execa');
-const passwdUser = require('passwd-user');
-const pAny = require('p-any');
-const filterObj = require('filter-obj');
+import process from 'node:process';
+import mem from 'mem';
+import {execa} from 'execa';
+import {passwdUser} from 'passwd-user';
+import pAny from 'p-any';
+import {includeKeys} from 'filter-obj';
+import rc from 'rc';
 
 const environmentVariables = [
 	'GIT_AUTHOR_NAME',
 	'GIT_COMMITTER_NAME',
 	'HGUSER', // Mercurial
-	'C9_USER' // Cloud9
+	'C9_USER', // Cloud9
 ];
 
 /* eslint-disable unicorn/error-message */
@@ -26,7 +27,7 @@ async function checkEnv() {
 }
 
 async function checkAuthorName() {
-	const fullName = require('rc')('npm')['init-author-name'];
+	const fullName = rc('npm')['init-author-name'];
 
 	if (!fullName) {
 		throw new Error();
@@ -46,10 +47,10 @@ async function checkPasswd() {
 }
 
 async function checkGit() {
-	const fullName = await execa.stdout('git', [
+	const {stdout: fullName} = await execa('git', [
 		'config',
 		'--global',
-		'user.name'
+		'user.name',
 	]);
 
 	if (!fullName) {
@@ -60,9 +61,9 @@ async function checkGit() {
 }
 
 async function checkOsaScript() {
-	const fullName = await execa.stdout('osascript', [
+	const {stdout: fullName} = await execa('osascript', [
 		'-e',
-		'long user name of (system info)'
+		'long user name of (system info)',
 	]);
 
 	if (!fullName) {
@@ -73,12 +74,12 @@ async function checkOsaScript() {
 }
 
 async function checkWmic() {
-	const stdout = await execa.stdout('wmic', [
+	const {stdout} = await execa('wmic', [
 		'useraccount',
 		'where',
 		`name="${process.env.USERNAME}"`,
 		'get',
-		'fullname'
+		'fullname',
 	]);
 
 	const fullName = stdout.replace('FullName', '').trim();
@@ -91,7 +92,7 @@ async function checkWmic() {
 }
 
 async function checkGetEnt() {
-	const result = await execa.shell('getent passwd $(whoami)');
+	const result = await execa('getent passwd $(whoami)', {shell: true});
 	const fullName = (result.stdout.split(':')[4] || '').replace(/,.*/, '');
 
 	if (!fullName) {
@@ -118,20 +119,22 @@ async function fallback() {
 async function getFullName() {
 	try {
 		return await checkEnv();
-	} catch (_) {}
+	} catch {}
 
 	try {
 		return await checkAuthorName();
-	} catch (_) {}
+	} catch {}
 
 	try {
 		return await fallback();
-	} catch (_) {}
+	} catch {}
 }
 
-module.exports = mem(getFullName, {
+const fullName = mem(getFullName, {
 	cachePromiseRejection: false,
 	cacheKey() {
-		return JSON.stringify(filterObj(process.env, environmentVariables));
-	}
+		return JSON.stringify(includeKeys(process.env, environmentVariables));
+	},
 });
+
+export default fullName;
