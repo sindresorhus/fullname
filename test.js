@@ -1,6 +1,6 @@
 import process from 'node:process';
 import test from 'ava';
-import mem from 'mem';
+import memoize from 'memoize';
 import mock from 'mock-require';
 import importFresh from 'import-fresh';
 
@@ -30,7 +30,7 @@ test.beforeEach(() => {
 
 test('should get fullname from env var', async t => {
 	const fullName = importFresh('.');
-	mem.clear(fullName);
+	memoize.clear(fullName);
 
 	process.env.GIT_AUTHOR_NAME = 'TEST-ENV-FULL-NAME';
 	const result = await fullName();
@@ -41,7 +41,7 @@ test('should get fullname from env var', async t => {
 
 test('respects changed env vars', async t => {
 	const fullName = importFresh('.');
-	mem.clear(fullName);
+	memoize.clear(fullName);
 
 	process.env.GIT_AUTHOR_NAME = 'NAME-1';
 	const result1 = await fullName();
@@ -61,7 +61,7 @@ test('should get value from init-author-name', async t => {
 	}));
 
 	const fullName = importFresh('.');
-	mem.clear(fullName);
+	memoize.clear(fullName);
 
 	const result = await fullName();
 	t.is(typeof result, 'string');
@@ -79,7 +79,7 @@ test('should get value from passwdUser for darwin platform', async t => {
 	}));
 
 	const fullName = importFresh('.');
-	mem.clear(fullName);
+	memoize.clear(fullName);
 
 	const result = await fullName();
 	t.is(typeof result, 'string');
@@ -99,7 +99,7 @@ test('should get value from osascript for darwin platform if passwdUser returns 
 	mock('passwd-user', () => Promise.resolve());
 
 	const fullName = importFresh('.');
-	mem.clear(fullName);
+	memoize.clear(fullName);
 
 	const result = await fullName();
 	t.is(typeof result, 'string');
@@ -119,7 +119,7 @@ test('should get value from osascript for darwin platform if passwdUser rejects'
 	mock('passwd-user', () => Promise.reject());
 
 	const fullName = importFresh('.');
-	mem.clear(fullName);
+	memoize.clear(fullName);
 
 	const result = await fullName();
 	t.is(typeof result, 'string');
@@ -145,7 +145,7 @@ test('should get value from git global user for win32 platform', async t => {
 	mock('passwd-user', () => Promise.reject());
 
 	const fullName = importFresh('.');
-	mem.clear(fullName);
+	memoize.clear(fullName);
 
 	const result = await fullName();
 	t.is(typeof result, 'string');
@@ -169,7 +169,7 @@ test('should get value from wmic for win32 platform if git global returns empty 
 	});
 
 	const fullName = importFresh('.');
-	mem.clear(fullName);
+	memoize.clear(fullName);
 
 	const result = await fullName();
 	t.is(typeof result, 'string');
@@ -193,7 +193,7 @@ test('should get value from wmic for win32 platform if git global rejects', asyn
 	});
 
 	const fullName = importFresh('.');
-	mem.clear(fullName);
+	memoize.clear(fullName);
 
 	const result = await fullName();
 	t.is(typeof result, 'string');
@@ -217,7 +217,7 @@ test('should get value from passwdUser for other platform and both other checks 
 	});
 
 	const fullName = importFresh('.');
-	mem.clear(fullName);
+	memoize.clear(fullName);
 
 	const result = await fullName();
 	t.is(typeof result, 'string');
@@ -241,7 +241,7 @@ test('should get value from getent for other platform and both other checks fail
 	});
 
 	const fullName = importFresh('.');
-	mem.clear(fullName);
+	memoize.clear(fullName);
 
 	const result = await fullName();
 	t.is(typeof result, 'string');
@@ -263,7 +263,7 @@ test('should get value from git for other platform and both other checks fail', 
 	});
 
 	const fullName = importFresh('.');
-	mem.clear(fullName);
+	memoize.clear(fullName);
 
 	const result = await fullName();
 	t.is(typeof result, 'string');
@@ -288,7 +288,7 @@ test('should get value from passwdUser for other platform and both other checks 
 	});
 
 	const fullName = importFresh('.');
-	mem.clear(fullName);
+	memoize.clear(fullName);
 
 	const result = await fullName();
 	t.is(typeof result, 'string');
@@ -312,7 +312,7 @@ test('should get value from getent for other platform and both other checks retu
 	});
 
 	const fullName = importFresh('.');
-	mem.clear(fullName);
+	memoize.clear(fullName);
 
 	const result = await fullName();
 	t.is(typeof result, 'string');
@@ -335,7 +335,7 @@ test('should get value from git for other platform and both other checks return 
 	});
 
 	const fullName = importFresh('.');
-	mem.clear(fullName);
+	memoize.clear(fullName);
 
 	const result = await fullName();
 	t.is(typeof result, 'string');

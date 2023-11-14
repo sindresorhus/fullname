@@ -19,6 +19,8 @@ console.log(await fullName());
 //=> 'Sindre Sorhus'
 ```
 
+Returns `undefined` if the fullname cannot be found.
+
 In the rare case a name cannot be found, you could fall back to [`username`](https://github.com/sindresorhus/username).
 
 ## Related

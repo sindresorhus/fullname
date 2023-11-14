@@ -1,5 +1,5 @@
 import process from 'node:process';
-import mem from 'mem';
+import memoize from 'memoize';
 import {execa} from 'execa';
 import {passwdUser} from 'passwd-user';
 import pAny from 'p-any';
@@ -130,7 +130,8 @@ async function getFullName() {
 	} catch {}
 }
 
-const fullName = mem(getFullName, {
+// TODO: `memoize` no longer has `{cachePromiseRejection: false}` option.
+const fullName = memoize(getFullName, {
 	cachePromiseRejection: false,
 	cacheKey() {
 		return JSON.stringify(includeKeys(process.env, environmentVariables));
